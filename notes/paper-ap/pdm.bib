@@ -1,0 +1,198 @@
+
+@article{baldassi_unreasonable_2016,
+  langid = {english},
+  title = {Unreasonable Effectiveness of Learning Neural Networks: {{From}} Accessible States and Robust Ensembles to Basic Algorithmic Schemes},
+  volume = {113},
+  issn = {0027-8424, 1091-6490},
+  url = {https://www.pnas.org/content/113/48/E7655},
+  doi = {10.1073/pnas.1608103113},
+  shorttitle = {Unreasonable Effectiveness of Learning Neural Networks},
+  abstract = {In artificial neural networks, learning from data is a computationally demanding task in which a large number of connection weights are iteratively tuned through stochastic-gradient-based heuristic processes over a cost function. It is not well understood how learning occurs in these systems, in particular how they avoid getting trapped in configurations with poor computational performance. Here, we study the difficult case of networks with discrete weights, where the optimization landscape is very rough even for simple architectures, and provide theoretical and numerical evidence of the existence of rare—but extremely dense and accessible—regions of configurations in the network weight space. We define a measure, the robust ensemble (RE), which suppresses trapping by isolated configurations and amplifies the role of these dense regions. We analytically compute the RE in some exactly solvable models and also provide a general algorithmic scheme that is straightforward to implement: define a cost function given by a sum of a finite number of replicas of the original cost function, with a constraint centering the replicas around a driving assignment. To illustrate this, we derive several powerful algorithms, ranging from Markov Chains to message passing to gradient descent processes, where the algorithms target the robust dense states, resulting in substantial improvements in performance. The weak dependence on the number of precision bits of the weights leads us to conjecture that very similar reasoning applies to more conventional neural networks. Analogous algorithmic schemes can also be applied to other optimization problems.},
+  number = {48},
+  journaltitle = {Proceedings of the National Academy of Sciences},
+  shortjournal = {PNAS},
+  urldate = {2019-03-06},
+  date = {2016-11-29},
+  pages = {E7655-E7662},
+  keywords = {machine learning,neural networks,optimization,statistical physics},
+  author = {Baldassi, Carlo and Borgs, Christian and Chayes, Jennifer T. and Ingrosso, Alessandro and Lucibello, Carlo and Saglietti, Luca and Zecchina, Riccardo},
+  file = {C:\\Users\\leope\\Zotero\\storage\\VPJFAAJS\\Baldassi et al. - 2016 - Unreasonable effectiveness of learning neural netw.pdf;C:\\Users\\leope\\Zotero\\storage\\Q5M2NI5K\\E7655.html},
+  eprinttype = {pmid},
+  eprint = {27856745}
+}
+
+@article{bailly-bechet_clustering_2009,
+  langid = {english},
+  title = {Clustering with Shallow Trees},
+  volume = {2009},
+  issn = {1742-5468},
+  url = {https://doi.org/10.1088%2F1742-5468%2F2009%2F12%2Fp12010},
+  doi = {10.1088/1742-5468/2009/12/P12010},
+  abstract = {We propose a new method for obtaining hierarchical clustering based on the optimization of a cost function over trees of limited depth, and we derive a message-passing method that allows one to use it efficiently. The method and the associated algorithm can be interpreted as a natural interpolation between two well-known approaches, namely that of single linkage and the recently presented affinity propagation. We analyse using this general scheme three biological/medical structured data sets (human population based on genetic information, proteins based on sequences and verbal autopsies) and show that the interpolation technique provides new insight.},
+  number = {12},
+  journaltitle = {Journal of Statistical Mechanics: Theory and Experiment},
+  shortjournal = {J. Stat. Mech.},
+  urldate = {2019-03-06},
+  date = {2009-12},
+  pages = {P12010},
+  author = {Bailly-Bechet, M. and Bradde, S. and Braunstein, A. and Flaxman, A. and Foini, L. and Zecchina, R.},
+  file = {C:\\Users\\leope\\Zotero\\storage\\XW5RS8RR\\Bailly-Bechet et al. - 2009 - Clustering with shallow trees.pdf}
+}
+
+@article{frey_clustering_2007,
+  langid = {english},
+  title = {Clustering by {{Passing Messages Between Data Points}}},
+  volume = {315},
+  issn = {0036-8075, 1095-9203},
+  url = {http://science.sciencemag.org/content/315/5814/972},
+  doi = {10.1126/science.1136800},
+  abstract = {Clustering data by identifying a subset of representative examples is important for processing sensory signals and detecting patterns in data. Such “exemplars” can be found by randomly choosing an initial subset of data points and then iteratively refining it, but this works well only if that initial choice is close to a good solution. We devised a method called “affinity propagation,” which takes as input measures of similarity between pairs of data points. Real-valued messages are exchanged between data points until a high-quality set of exemplars and corresponding clusters gradually emerges. We used affinity propagation to cluster images of faces, detect genes in microarray data, identify representative sentences in this manuscript, and identify cities that are efficiently accessed by airline travel. Affinity propagation found clusters with much lower error than other methods, and it did so in less than one-hundredth the amount of time.
+An algorithm that exchanges messages about the similarity of pairs of data points speeds identification of representative examples in a complex data set, such as genes in DNA data.
+An algorithm that exchanges messages about the similarity of pairs of data points speeds identification of representative examples in a complex data set, such as genes in DNA data.},
+  number = {5814},
+  journaltitle = {Science},
+  urldate = {2019-03-06},
+  date = {2007-02-16},
+  pages = {972-976},
+  author = {Frey, Brendan J. and Dueck, Delbert},
+  file = {C:\\Users\\leope\\Zotero\\storage\\84NMI8UK\\Frey and Dueck - 2007 - Clustering by Passing Messages Between Data Points.pdf;C:\\Users\\leope\\Zotero\\storage\\7WXD9D7D\\972.html},
+  eprinttype = {pmid},
+  eprint = {17218491}
+}
+
+@online{noauthor_affinity_nodate,
+  title = {Affinity {{Propagation}} — {{Clustering}} 0.3.0 Documentation},
+  url = {https://clusteringjl.readthedocs.io/en/latest/affprop.html},
+  urldate = {2019-06-11},
+  file = {C:\\Users\\leope\\Zotero\\storage\\CX2PD6R6\\affprop.html}
+}
+
+@article{baldassi_shaping_2019,
+  archivePrefix = {arXiv},
+  eprinttype = {arxiv},
+  eprint = {1905.07833},
+  primaryClass = {cond-mat, stat},
+  title = {Shaping the Learning Landscape in Neural Networks around Wide Flat Minima},
+  url = {http://arxiv.org/abs/1905.07833},
+  abstract = {Learning in Deep Neural Networks (DNN) takes place by minimizing a non-convex high-dimensional loss function, typically by a stochastic gradient descent (SGD) strategy. The learning process is observed to be able to find good minimizers without getting stuck in local critical points, and that such minimizers are often satisfactory at avoiding overfitting. How these two features can be kept under control in nonlinear devices composed of millions of tunable connections is a profound and far reaching open question. In this paper we study basic non-convex neural network models which learn random patterns, and derive a number of basic geometrical and algorithmic features which suggest some answers. We first show that the error loss function presents few extremely wide flat minima (WFM) which coexist with narrower minima and critical points. We then show that the minimizers of the cross-entropy loss function overlap with the WFM of the error loss. We also show examples of learning devices for which WFM do not exist. From the algorithmic perspective we derive entropy driven greedy and message passing algorithms which focus their search on wide flat regions of minimizers. In the case of SGD and cross-entropy loss, we show that a slow reduction of the norm of the weights along the learning process also leads to WFM. We corroborate the results by a numerical study of the correlations between the volumes of the minimizers, their Hessian and their generalization performance on real data.},
+  urldate = {2019-06-11},
+  date = {2019-05-19},
+  keywords = {Computer Science - Machine Learning,Condensed Matter - Disordered Systems and Neural Networks,Statistics - Machine Learning},
+  author = {Baldassi, Carlo and Pittorino, Fabrizio and Zecchina, Riccardo},
+  file = {C:\\Users\\leope\\Zotero\\storage\\MI54IJIS\\Baldassi et al. - 2019 - Shaping the learning landscape in neural networks .pdf;C:\\Users\\leope\\Zotero\\storage\\ZENPG6GA\\1905.html},
+  annotation = {Comment: 46 pages (20 main text), 7 figures (v2 fixes fig. 1 and a few typos in formulas)}
+}
+
+@article{chaudhari_entropy-sgd_2016,
+  archivePrefix = {arXiv},
+  eprinttype = {arxiv},
+  eprint = {1611.01838},
+  primaryClass = {cs, stat},
+  title = {Entropy-{{SGD}}: {{Biasing Gradient Descent Into Wide Valleys}}},
+  url = {http://arxiv.org/abs/1611.01838},
+  shorttitle = {Entropy-{{SGD}}},
+  abstract = {This paper proposes a new optimization algorithm called Entropy-SGD for training deep neural networks that is motivated by the local geometry of the energy landscape. Local extrema with low generalization error have a large proportion of almost-zero eigenvalues in the Hessian with very few positive or negative eigenvalues. We leverage upon this observation to construct a local-entropy-based objective function that favors well-generalizable solutions lying in large flat regions of the energy landscape, while avoiding poorly-generalizable solutions located in the sharp valleys. Conceptually, our algorithm resembles two nested loops of SGD where we use Langevin dynamics in the inner loop to compute the gradient of the local entropy before each update of the weights. We show that the new objective has a smoother energy landscape and show improved generalization over SGD using uniform stability, under certain assumptions. Our experiments on convolutional and recurrent networks demonstrate that Entropy-SGD compares favorably to state-of-the-art techniques in terms of generalization error and training time.},
+  urldate = {2019-06-11},
+  date = {2016-11-06},
+  keywords = {Computer Science - Machine Learning,Statistics - Machine Learning},
+  author = {Chaudhari, Pratik and Choromanska, Anna and Soatto, Stefano and LeCun, Yann and Baldassi, Carlo and Borgs, Christian and Chayes, Jennifer and Sagun, Levent and Zecchina, Riccardo},
+  file = {C:\\Users\\leope\\Zotero\\storage\\373U968F\\Chaudhari et al. - 2016 - Entropy-SGD Biasing Gradient Descent Into Wide Va.pdf;C:\\Users\\leope\\Zotero\\storage\\2IJCXDQD\\1611.html},
+  annotation = {Comment: ICLR '17}
+}
+
+@online{noauthor_clustering_nodate,
+  title = {Clustering Datasets},
+  url = {https://cs.joensuu.fi/sipu/datasets/},
+  urldate = {2019-06-11}
+}
+
+@book{mezard_information_2009-1,
+  langid = {english},
+  location = {{Oxford ; New York}},
+  title = {Information, {{Physics}}, and {{Computation}}},
+  edition = {1 edition},
+  isbn = {978-0-19-857083-7},
+  abstract = {This book presents a unified approach to a rich and rapidly evolving research domain at the interface between statistical physics, theoretical computer science/discrete mathematics, and coding/information theory. It is accessible to graduate students and researchers without a specific training in any of these fields. The selected topics include spin glasses, error correcting codes, satisfiability, and are central to each field. The approach focuses on large random instances, adopting a common probabilistic formulation in terms of graphical models. It presents message passing algorithms like belief propagation and survey propagation, and their use in decoding and constraint satisfaction solving. It also explains analysis techniques like density evolution and the cavity method, and uses them to study phase transitions.},
+  pagetotal = {569},
+  publisher = {{Oxford University Press}},
+  date = {2009-03-27},
+  author = {Mézard, Marc and Montanari, Andrea}
+}
+
+@article{sagun_eigenvalues_2016,
+  archivePrefix = {arXiv},
+  eprinttype = {arxiv},
+  eprint = {1611.07476},
+  primaryClass = {cs},
+  title = {Eigenvalues of the {{Hessian}} in {{Deep Learning}}: {{Singularity}} and {{Beyond}}},
+  url = {http://arxiv.org/abs/1611.07476},
+  shorttitle = {Eigenvalues of the {{Hessian}} in {{Deep Learning}}},
+  abstract = {We look at the eigenvalues of the Hessian of a loss function before and after training. The eigenvalue distribution is seen to be composed of two parts, the bulk which is concentrated around zero, and the edges which are scattered away from zero. We present empirical evidence for the bulk indicating how over-parametrized the system is, and for the edges that depend on the input data.},
+  urldate = {2019-06-14},
+  date = {2016-11-22},
+  keywords = {Computer Science - Machine Learning},
+  author = {Sagun, Levent and Bottou, Leon and LeCun, Yann},
+  file = {C:\\Users\\leope\\Zotero\\storage\\6RFGFTDY\\Sagun et al. - 2016 - Eigenvalues of the Hessian in Deep Learning Singu.pdf;C:\\Users\\leope\\Zotero\\storage\\FDWJFSHI\\1611.html},
+  annotation = {Comment: ICLR submission, 2016 - updated to match the openreview.net version}
+}
+
+@article{frey_clustering_2007-1,
+  langid = {english},
+  title = {Clustering by {{Passing Messages Between Data Points}}},
+  volume = {315},
+  issn = {0036-8075, 1095-9203},
+  url = {https://science.sciencemag.org/content/315/5814/972},
+  doi = {10.1126/science.1136800},
+  abstract = {An algorithm that exchanges messages about the similarity of pairs of data points speeds identification of representative examples in a complex data set, such as genes in DNA data.
+An algorithm that exchanges messages about the similarity of pairs of data points speeds identification of representative examples in a complex data set, such as genes in DNA data.},
+  number = {5814},
+  journaltitle = {Science},
+  urldate = {2019-06-17},
+  date = {2007-02-16},
+  pages = {972-976},
+  author = {Frey, Brendan J. and Dueck, Delbert},
+  file = {C:\\Users\\leope\\Zotero\\storage\\JNKYVPF8\\Frey and Dueck - 2007 - Clustering by Passing Messages Between Data Points.pdf;C:\\Users\\leope\\Zotero\\storage\\8CTLCB42\\tab-figures-data.html},
+  eprinttype = {pmid},
+  eprint = {17218491}
+}
+
+@online{noauthor_affinity_nodate-1,
+  title = {Affinity {{Propagation}} | {{Frey Lab}}},
+  url = {http://genes.toronto.edu/index.php?q=affinity%20propagation},
+  urldate = {2019-06-25},
+  file = {C:\\Users\\leope\\Zotero\\storage\\UA7WTLSN\\index.html}
+}
+
+@article{franti_k-means_2018,
+  langid = {english},
+  title = {K-Means Properties on Six Clustering Benchmark Datasets},
+  volume = {48},
+  issn = {0924-669X, 1573-7497},
+  url = {http://link.springer.com/10.1007/s10489-018-1238-7},
+  doi = {10.1007/s10489-018-1238-7},
+  number = {12},
+  journaltitle = {Applied Intelligence},
+  shortjournal = {Appl Intell},
+  urldate = {2019-06-25},
+  date = {2018-12},
+  pages = {4743-4759},
+  author = {Fränti, Pasi and Sieranoja, Sami}
+}
+
+@article{rand_objective_1971,
+  title = {Objective {{Criteria}} for the {{Evaluation}} of {{Clustering Methods}}},
+  volume = {66},
+  issn = {0162-1459},
+  url = {https://www.tandfonline.com/doi/abs/10.1080/01621459.1971.10482356},
+  doi = {10.1080/01621459.1971.10482356},
+  abstract = {Many intuitively appealing methods have been suggested for clustering data, however, interpretation of their results has been hindered by the lack of objective criteria. This article proposes several criteria which isolate specific aspects of the performance of a method, such as its retrieval of inherent structure, its sensitivity to resampling and the stability of its results in the light of new data. These criteria depend on a measure of similarity between two different clusterings of the same set of data; the measure essentially considers how each pair of data points is assigned in each clustering.},
+  number = {336},
+  journaltitle = {Journal of the American Statistical Association},
+  urldate = {2019-07-05},
+  date = {1971-12-01},
+  pages = {846-850},
+  author = {Rand, William M.},
+  file = {C:\\Users\\leope\\Zotero\\storage\\KISBGKGF\\Rand - 1971 - Objective Criteria for the Evaluation of Clusterin.pdf;C:\\Users\\leope\\Zotero\\storage\\SFHGN7PW\\01621459.1971.html}
+}
+
+

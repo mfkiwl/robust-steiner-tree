@@ -1,0 +1,3768 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass revtex4-1
+\begin_preamble
+\usepackage{tikz}
+\usepackage{color}
+\usepackage{newtxtext}
+\usepackage{newtxmath}
+\usepackage{dsfont}
+\usepackage{geometry}
+
+\usepackage{color}
+\definecolor{burntorange}{rgb}{0.8, 0.33, 0.0}
+\definecolor{charcoal}{rgb}{0.21, 0.27, 0.31}
+\definecolor{coolblack}{rgb}{0.0, 0.28, 0.49}
+\definecolor{burntgreen}{rgb}{0.05, 0.45, 0.27}
+\definecolor{burntblue}{rgb}{0.05, 0.27, 0.8}
+\end_preamble
+\options notitlepage,superscriptaddress,nofootinbib
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\pdf_quoted_options "linkcolor=coolblack,citecolor=burntorange,urlcolor=burntgreen"
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type numerical
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Entropic Affinity Propagation for Robust Clustering
+\end_layout
+
+\begin_layout Author
+Carlo Baldassi
+\end_layout
+
+\begin_layout Affiliation
+Artificial Intelligence Lab, Institute for Data Science and Analytics, Bocconi
+ University, Milano, Italy
+\end_layout
+
+\begin_layout Author
+Riccardo Della Vecchia
+\end_layout
+
+\begin_layout Affiliation
+Artificial Intelligence Lab, Institute for Data Science and Analytics, Bocconi
+ University, Milano, Italy
+\end_layout
+
+\begin_layout Author
+Gabriele Perugini
+\end_layout
+
+\begin_layout Affiliation
+Artificial Intelligence Lab, Institute for Data Science and Analytics, Bocconi
+ University, Milano, Italy
+\end_layout
+
+\begin_layout Author
+Leonardo Petrini
+\end_layout
+
+\begin_layout Author Email
+leonardo.petrini@epfl.ch
+\end_layout
+
+\begin_layout Affiliation
+EPFL, Physics Department, EPFL, Switzerland
+\end_layout
+
+\begin_layout Author
+Riccardo Zecchina
+\end_layout
+
+\begin_layout Affiliation
+Artificial Intelligence Lab, Institute for Data Science and Analytics, Bocconi
+ University, Milano, Italy
+\end_layout
+
+\begin_layout Date
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+today
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+We discuss rAP and compare it to AP.
+ Abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract abstract
+ abstract abstract abstract abstract abstract abstract abstract.
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Unsupervised data analysis may suffer from overfitting, which can become
+ a huge obstacle for the extraction of useful information if the collected
+ data come from noisy environments that produce spurious correlations.
+ Data clustering is a major example of unsupervised data analysis where
+ such  phenomenon can be easily defined and discussed.
+ Among the multitude of clustering algorithms, Affinity Propagation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "frey_clustering_2007"
+literal "false"
+
+\end_inset
+
+ offers a modeling framework in which the overfitting can be clearly identified,
+ and this allows us to introduce a method which uses the notion of invariance
+ and local entropy to obviate it.
+\end_layout
+
+\begin_layout Standard
+Affinity Propagation (AP) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "frey_clustering_2007"
+literal "false"
+
+\end_inset
+
+ is a clustering algorithm that aims at finding "exemplars": members of
+ the data set that are representative of clusters.
+ As in any standard approach to data clustering, AP starts from a definition
+ of distance between each pair of data points, referred to as 
+\emph on
+dissimilarity
+\emph default
+ (or equivalently from its negation, called 
+\emph on
+similarity
+\emph default
+).
+ Each point in the data set is associated to its nearest exemplar, and the
+ aim is that of finding exemplars such that the total sum of the dissimilarities
+ between each point and its exemplar are minimized.
+ This (highly non-convex) objective function is very similar to that of
+ the famous 
+\emph on
+
+\begin_inset Formula $k$
+\end_inset
+
+-medoids
+\emph default
+ algorithm, but there are two main differences.
+ First, in 
+\begin_inset Formula $k$
+\end_inset
+
+-medoids the number of exemplars 
+\begin_inset Formula $k$
+\end_inset
+
+ is an input parameter of the algorithm, whereas AP uses a different control
+ parameter that determines 
+\begin_inset Formula $k$
+\end_inset
+
+ indirectly.
+ Secondly, and more importantly, in AP the minimization is performed through
+ a message passing max-sum algorithm rather than a greedy local search technique.
+\end_layout
+
+\begin_layout Standard
+A condition for AP to give good results is that the structure underlying
+ the data fits the hypothesis that the clusters have sphere-like shapes
+ around the exemplars with respect to the chosen metric.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+This is often the case; otherwise, different strategies need to be considered
+ (e.g.
+\begin_inset space ~
+\end_inset
+
+REF).
+\end_layout
+
+\end_inset
+
+ Even in an 
+\begin_inset Quotes eld
+\end_inset
+
+ideal
+\begin_inset Quotes erd
+\end_inset
+
+ situation, however, finding the optimal exemplars is in principle a very
+ hard discrete optimization problem.
+ The key advantage of the message-passing approach employed by AP with respect
+ to a local search scheme like 
+\begin_inset Formula $k$
+\end_inset
+
+-medoids is that it is much less prone at getting stuck into bad local minima:
+ indeed, although convergence and optimality for AP can be proven only under
+ quite restrictive conditions, AP has shown to perform quite well in numerous
+ applications.
+\end_layout
+
+\begin_layout Standard
+Nevertheless, as we shall show in more detail in what follows, AP can still
+ be sensitive to initial conditions, it can get trapped into sub-optimal
+ solutions, and it can suffer from overfitting.
+ In this context, overfitting can be loosely defined as a lack of robustness
+ of the clustering results with respect to perturbations in the choice of
+ the exemplars.
+\end_layout
+
+\begin_layout Standard
+Our goal is to improve these aspects of AP, without incurring in excessive
+ additional computational costs.
+ From the optimization perspective, we set as our objective an even harder
+ problem: we aim at finding exemplars which, at the same time, minimize
+ the cumulative distance with respect to the associated data points and
+ are surrounded by nearby data points which could be also chosen as exemplars
+ without changing too much such cumulative distance.
+ In terms of the clustering objective function, which we will hereafter
+ refer to as 
+\emph on
+energy
+\emph default
+, we aim at finding minima which belong to regions of high local entropy,
+ i.e.
+ low energy minima which are as flat and wide as possible over some extensive
+ distance.
+\end_layout
+
+\begin_layout Standard
+The problem of finding high local entropy  minima has been recently studied
+ in the context of supervised learning, and an algorithmic scheme has been
+ introduced which allows to efficiently target such minima.
+ In particular, it has been shown that the Gibbs measure of the barycenter
+ of a set of 
+\begin_inset Formula $y$
+\end_inset
+
+ copies of the original energy function constrained to be at some mutual
+ distance corresponds to the Gibbs measure of the local entropy function.
+ This fact allows to design different types of algorithm (e.g.
+\begin_inset space ~
+\end_inset
+
+gradient descent, Simulated Annealing and message passing) which by minimizing
+ the energy of the coupled replicas are attracted to high local entropy
+ minima.
+\end_layout
+
+\begin_layout Standard
+Here, we will generalize such results to the case of unsupervised learning,
+ taking the task of finding robust exemplars as prototypical problem, and
+ by designing a message passing algorithm which performs such task and generaliz
+es AP.
+ The aim of our work is to provide a proof of concept of the approach, and
+ our numerical validation is limited to simple artificial datasets.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+AP asBorrowing some insuhtg works on the high dimensional energy landscape
+ of some supervised learning devices have shown that wide flat minima –
+ i.e.
+ very dense but extremely rare regions of solutions – exist and that they
+ are targeted by the tools commonly used in practice 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "baldassi_shaping_2019"
+literal "false"
+
+\end_inset
+
+.
+ These findings paved the way to the development of novel algorithmic schemes
+ by defining a local-entropy-based objective function either directly 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "chaudhari_entropy-sgd_2016"
+literal "false"
+
+\end_inset
+
+ or by replicating the original cost-function and making the replicas interact
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "baldassi_unreasonable_2016"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+Following this line of work, which mainly focuses on the study of neural
+ networks, this project aims at transferring these insights to unsupervised
+ learning, constructing a robust version of the affinity propagation scheme
+ by replicating its factor graph.
+\end_layout
+
+\begin_layout Plain Layout
+In this chapter we introduce the main ingredients used throughout the project,
+ we first describe the main ideas behind 
+\shape italic
+message passing algorithms
+\shape default
+, giving particular focus to the 
+\shape italic
+max-sum algorithm
+\shape default
+.
+ In section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:AP_clustering"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we introduce 
+\shape italic
+affinity propagation
+\shape default
+, its formulation on a factor graph and the resulting message passing algorithm.
+ Finally, in the last section we outline the main element of 
+\shape italic
+local-entropy theory
+\shape default
+, concluding the list of all the elements needed to derive the novel 
+\shape italic
+replicated affinity propagation
+\shape default
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Robust Affinity Propagation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status collapsed
+
+\begin_layout Plain Layout
+PEZZI PRE-ESISTENTI CHE HO TAGLIATO
+\end_layout
+
+\begin_layout Plain Layout
+Message passing algorithms are a tool to perform inference on graphical
+ models by locally exchanging messages between nodes through the edges that
+ connect them.
+ Even if this kind of algorithms perform exact inference only on tree graphs,
+ they produce accurate approximate results also on graphs with loops.
+ In this case we talk about Approximate Message Passing (AMP).
+ A factor graph is a bipartite graph where the nodes are split into a set
+ of 
+\shape italic
+variables
+\shape default
+, graphically denoted by a circle, and 
+\shape italic
+factors
+\shape default
+, denoted by a square.
+ The joint probability distribution function of a factor graph can always
+ be written as where 
+\begin_inset Formula $\bm{x}$
+\end_inset
+
+ is the set of variable nodes, 
+\begin_inset Formula $F$
+\end_inset
+
+ is the set of factor nodes and 
+\begin_inset Formula $\bm{x}_{\partial a}\equiv\left\{ x_{i}\mid i\in\partial a\right\} $
+\end_inset
+
+ is the set of variables which appear in factor 
+\begin_inset Formula $a$
+\end_inset
+
+.
+ There exist two kind of AMP algorithms defined on factor graphs, the 
+\shape italic
+sum-product
+\shape default
+ – commonly known as Belief Propagation or BP – and the 
+\shape italic
+max-sum
+\shape default
+ – which is the zero temperature limit of the latter, in the log-domain.
+ Here we directly focus on the max-sum algorithm, which is the one employed
+ in the following sections.
+ The Max-sum Algorithm consists in exchanging messages between factor and
+ variable nodes in an iterative fashion and, eventually, until convergence.
+\end_layout
+
+\begin_layout Plain Layout
+Notice that, being in the log-domain, the max-sum messages are defined up
+ to an overall additive constant, and not a multiplicative one as we have
+ in the definition on 
+\begin_inset Formula $p\left(\bm{x}\right)$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $Z^{-1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+Usually, in a statistical physics framework, these equations take the name
+ of 
+\shape italic
+Cavity Method
+\shape default
+ and the problem of finding the mode of a distribution that factorizes as
+ in equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eqn:pofx"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) can be seen as minimizing a certain energy function which can be written
+ as the sum of local terms: 
+\begin_inset Formula 
+\begin{equation}
+E\left(\bm{x}\right)=\sum_{a\in F}E_{a}\left(\bm{x}_{\partial a}\right).
+\end{equation}
+
+\end_inset
+
+In this context, each factor can be rewritten as 
+\begin_inset Formula $f_{a}\left(\bm{x}_{\partial a}\right)=e^{E_{a}\left(\bm{x}_{\partial a}\right)}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+Message passing algorithms have experienced a wide success in different
+ fields, from 
+\shape italic
+Spin Glasses
+\shape default
+ in statistical physics to 
+\shape italic
+Boolean Satisfiability Problems
+\shape default
+ in computer science, to 
+\shape italic
+Low-density Parity-check Codes
+\shape default
+ in information theory.
+ Finally and more recently, it has proven his efficacy in clustering data
+ with the development of the so called 
+\shape italic
+Affinity Propagation Aqlgorithm
+\shape default
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Belief Propagation (BP) is an iterative message passing algorithm for solving
+ self-consistency equations that determine the minima of the Bethe mean
+ field free energy
+\series bold
+ [REF]
+\series default
+.
+ The validity of the Bethe approximation relies in general on the assumption
+ that the correlations among the variables decay fast enough at large distance
+ 
+\series bold
+[REF]
+\series default
+.
+ However, the use of the BP algorithm in problems where the Bethe approximation
+ is not guaranteed to be correct is a well consolidated practice 
+\series bold
+[REF]
+\series default
+.
+ In general, given an energy function of the form 
+\begin_inset Formula 
+\begin{equation}
+E\left(\bm{x}\right)=\sum_{a\in F}E_{a}\left(\bm{x}_{\partial a}\right)\,,
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\bm{x}_{\partial a}\equiv\left\{ x_{i}\mid i\in\partial a\right\} $
+\end_inset
+
+ are the variables involved in the 
+\begin_inset Formula $a$
+\end_inset
+
+-th interaction, one can easily derive the mean field equations in the Bethe
+ approximation for the corresponding joint equilibrium probability distribution
+\begin_inset Formula 
+\begin{equation}
+p\left(\bm{x}\right)=\frac{1}{Z}\prod_{a\in F}f_{a}\left(\bm{x}_{\partial a}\right)\,.\label{eqn:pofx}
+\end{equation}
+
+\end_inset
+
+As we are interested in optimization problems, we shall focus on the zero
+ temperature limit of the BP equations, which are usually called the Max-Sum
+ equations.
+ For the joint probability distribution 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eqn:pofx"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ the Max-Sum equations read: 
+\begin_inset Formula 
+\begin{eqnarray}
+\rho_{i\to a}^{\left(t+1\right)}\left(\bm{x}_{i}\right) & \simeq & \sum_{b\in\partial i\smallsetminus a}\alpha_{i\leftarrow b}^{\left(t\right)}\left(\bm{x}_{i}\right),\\
+\alpha_{i\leftarrow b}^{\left(t+1\right)}\left(\bm{x}_{i}\right) & \simeq & \max_{\bm{x}_{\partial a\smallsetminus i}}\left[\ln f_{a}\left(\bm{x}_{\partial a}\right)+\sum_{j\in\partial a\smallsetminus i}\rho_{j\to a}^{\left(t\right)}\left(\bm{x}_{j}\right)\right],
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $t$
+\end_inset
+
+ indicates the iteration time.
+ At convergence, we can compute the marginals in the Bethe approximation
+ using the messages as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho_{i}\left(\bm{x}_{i}\right)\simeq\sum_{a\in\partial i}\alpha_{i\leftarrow a}\left(\bm{x}_{i}\right)\,,
+\end{equation}
+
+\end_inset
+
+that can in turn be used to compute the variables configuration.
+ 
+\end_layout
+
+\begin_layout Standard
+A convenient way of visualizing these message passing equations is through
+ the so called factor graph representation.
+ A factor graph is a bipartite graph where variables (usually represented
+ by circles) are connected to function nodes 
+\begin_inset Formula $f_{a}\left(\boldsymbol{x}_{\partial a}\right)$
+\end_inset
+
+ (represented by squares) involving them.
+ In this graphical representation, messages pass information along the edges
+ of the factor graph, from variable to function nodes and vice versa.
+\end_layout
+
+\begin_layout Standard
+In the following we shall review the AP algorithm, which is a Max-Sum algorithm
+ that minimize a specific energy function, then we will modify the AP energy
+ function in order to bias the solution towards high local entropy minima,
+ and derive the corresponding Max-Sum equations.
+\end_layout
+
+\begin_layout Subsection
+AP message passing equations
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:AP_clustering"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/tikz_0.pdf
+	width 40col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Affinity Propagation Factor Graph.
+
+\series default
+ The graph is drawn for the simple case of 
+\begin_inset Formula $N=3$
+\end_inset
+
+.
+ Each variable 
+\begin_inset Formula $c_{i}$
+\end_inset
+
+ contains both the information about node 
+\begin_inset Formula $i$
+\end_inset
+
+ being an exemplar or not, i.e.
+ 
+\begin_inset Formula $c_{i}=i$
+\end_inset
+
+, and about its candidate parent.
+ Information about the similarity between data-points is embedded via the
+ local fields 
+\begin_inset Formula $e^{-s\left(i,c_{i}\right)}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:AP_factor_graph"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Unsupervised learning algorithms aim at finding patterns in unlabeled data
+ and clustering algorithms belong to this category.
+ In general, clustering is the task of grouping data-points in such a way
+ that points in the same group share similar features.
+\end_layout
+
+\begin_layout Standard
+Affinity Propagation (AP) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "frey_clustering_2007"
+literal "false"
+
+\end_inset
+
+ is a clustering algorithm based on message passing between data-points.
+ Similarly to 
+\begin_inset Formula $k$
+\end_inset
+
+-medoids, AP identifies each cluster by an 
+\shape italic
+exemplar
+\shape default
+ belonging to the data-set, which can be taken as representative for all
+ the points in the cluster.
+ The algorithm takes as input a (not necessarily symmetric) 
+\shape italic
+similarity matrix
+\shape default
+ 
+\begin_inset Formula $S$
+\end_inset
+
+ whose entries 
+\begin_inset Formula $s_{ij}$
+\end_inset
+
+ give a measure of how similar points 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ are to each other, hence the name.
+ A typical example of a similarity matrix is the negative euclidean distance
+ between data points, but the notion of similarity can be easily generalized
+ to datasets where the euclidean distance is not defined.
+ For this reason, AP can handle a wider range of different data-sets than
+ other standard clustering algorithm like 
+\begin_inset Formula $k$
+\end_inset
+
+-means or Gaussian Mixture Models.
+ Moreover, in AP, the number of clusters do not need to be specified beforehand.
+ The diagonal elements of the similarity matrix are responsible for the
+ resulting number of exemplars.
+ These elements are called 
+\shape italic
+preferences
+\shape default
+ and their value – 
+\begin_inset Formula $s_{kk}$
+\end_inset
+
+ – is a measure of how likely is point 
+\begin_inset Formula $k$
+\end_inset
+
+ to be chosen as exemplar.
+ If preferences are not specified, setting their value to the median of
+ 
+\begin_inset Formula $S$
+\end_inset
+
+ – or to its minimum – usually gives reasonable results.
+\end_layout
+
+\begin_layout Standard
+Given a set of 
+\begin_inset Formula $N$
+\end_inset
+
+ data points and a similarity matrix 
+\begin_inset Formula $s$
+\end_inset
+
+, we assign to each point 
+\begin_inset Formula $k$
+\end_inset
+
+ a variable 
+\begin_inset Formula $c_{k}\in\left\{ 1,\dots N\right\} $
+\end_inset
+
+ whose value can be seen as the candidate exemplar for point 
+\begin_inset Formula $k$
+\end_inset
+
+, with 
+\begin_inset Formula $c_{k}=k$
+\end_inset
+
+ meaning that point 
+\begin_inset Formula $k$
+\end_inset
+
+ is an exemplar.
+ The energy function can then be written as 
+\begin_inset Formula 
+\begin{equation}
+E\left(\bm{c}\right)=-\sum_{i=1}^{N}s\left(i,c_{i}\right)-\sum_{k=1}^{N}\delta_{k}\left(\boldsymbol{c}\right),\label{eq:energy-ap}
+\end{equation}
+
+\end_inset
+
+with 
+\begin_inset Formula $\bm{c}=\left(c_{1},\dots c_{N}\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\delta_{k}\left(\boldsymbol{c}\right)$
+\end_inset
+
+ being a penalty term which enforces the fact that, if a certain point 
+\begin_inset Formula $i$
+\end_inset
+
+ chooses 
+\begin_inset Formula $k$
+\end_inset
+
+ as being its exemplar, then 
+\begin_inset Formula $c_{k}=k$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{equation}
+\delta_{k}\left(\boldsymbol{c}\right)=\begin{cases}
+-\infty,\quad\text{if}\;c_{k}\neq k\;\text{but}\;\exists\,i:c_{i}=k\\[6pt]
+\:0,\qquad\text{otherwise.}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Minimizing exactly the energy function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:energy-ap"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is in general an intractable problem, and we shall rely on the Bethe approximat
+ion.
+ The factor graph for the energy function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:energy-ap"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be seen in Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:AP_factor_graph"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ From the factor graph representation one can derive as usual the recursive
+ message passing equations, whose fixed points messages describe the Bethe
+ free energy minima.
+ In the zero temperature limit, the Max-Sum equations are described by the
+ recursive equations for the 
+\begin_inset Formula $\rho$
+\end_inset
+
+-messages going from variable to factor nodes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho_{i\rightarrow k}\left(c_{i}\right)=s\left(i,c_{i}\right)+\sum_{k^{\prime}}\alpha_{i\leftarrow k^{\prime}}\left(c_{i}\right)
+\end{equation}
+
+\end_inset
+
+and the 
+\begin_inset Formula $\alpha$
+\end_inset
+
+-messages from factor to variable nodes as 
+\begin_inset Formula 
+\begin{equation}
+\alpha_{i\leftarrow k}\left(c_{i}\right)=\max_{j_{1},\dots,j_{i-1},j_{i+1},\dots,j_{N}}\Big[\delta_{k}\left(j_{1},\dots,j_{i-1},c_{i},j_{i+1},\dots,j_{N}\right)+\sum_{i^{\prime}\neq i}\rho_{i^{\prime}\to k}\left(j_{i^{\prime}}\right)\Big].
+\end{equation}
+
+\end_inset
+
+In principle, each message is a vector of 
+\begin_inset Formula $N$
+\end_inset
+
+ real numbers, one for each value that the variables 
+\begin_inset Formula $c_{k}$
+\end_inset
+
+ can take.
+ With some simple algebra these vectors can be reduced to scalar messages:
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+For the extended derivation see 
+\shape italic
+Supporting Online Material for Clustering by Passing Messages Between data-point
+s - Brendan J.
+ Frey and Delbert Dueck
+\shape default
+, pp.
+ 10-13 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+:
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "\\texttt{[sciencemag.org]}"
+target "https://science.sciencemag.org/content/sci/suppl/2007/01/08/1136800.DC1/Frey.SOM.pdf"
+literal "true"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray}
+r\left(i,k\right) & = & s\left(i,k\right)-\max_{j:j\neq k}\Big[s\left(i,j\right)+a\left(i,j\right)\Big]\\
+a\left(i,k\right) & = & \begin{cases}
+\sum_{j:j\neq k}\max\left(0,r\left(j,k\right)\right), & \text{for}\:k=i\\[6pt]
+\min\Big[0,r\left(k,k\right)+\sum_{j:j\neq i,k}\max\left(0,r\left(j,k\right)\right)\Big],\; & \text{for}\:k\neq i,
+\end{cases}
+\end{eqnarray}
+
+\end_inset
+
+each taking into account a different kind of competition.
+ 
+\series bold
+(meglio spiegare in un paio di righe senza citazioni)
+\series default
+.
+ The authors called 
+\begin_inset Formula $r\left(i,k\right)$
+\end_inset
+
+ the 
+\shape italic
+responsibility
+\shape default
+ which 
+\end_layout
+
+\begin_layout Quote
+\begin_inset Quotes eld
+\end_inset
+
+reflects the accumulated evidence for how well-suited point 
+\begin_inset Formula $k$
+\end_inset
+
+ is to serve as the exemplar for point 
+\begin_inset Formula $i$
+\end_inset
+
+, taking into account other possible exemplars for point 
+\begin_inset Formula $i$
+\end_inset
+
+.
+\begin_inset Quotes eld
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\shape italic
+availability
+\shape default
+ 
+\begin_inset Formula $a\left(i,k\right)$
+\end_inset
+
+ sent from a candidate exemplar 
+\begin_inset Formula $k$
+\end_inset
+
+ to 
+\begin_inset Formula $i$
+\end_inset
+
+, instead, 
+\end_layout
+
+\begin_layout Quote
+\begin_inset Quotes eld
+\end_inset
+
+reflects the accumulated evidence for how appropriate it would be for point
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ to choose point 
+\begin_inset Formula $k$
+\end_inset
+
+ as its exemplar, taking into account the support from other points that
+ point 
+\begin_inset Formula $k$
+\end_inset
+
+ should be an exemplar.
+\begin_inset Quotes eld
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Once the update equations eventually converge, we can retrieve the most
+ likely configuration 
+\begin_inset Formula $\hat{\bm{c}}$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\begin{equation}
+\hat{c}_{i}=\underset{j}{\operatorname{argmax}}\left[a\left(i,j\right)+r\left(i,j\right)\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operationally, the authors propose to initialize all messages to zero and
+ to use damping at each update; e.g.
+ for 
+\begin_inset Formula $\rho$
+\end_inset
+
+-messages, 
+\begin_inset Formula 
+\begin{equation}
+\rho_{i\to a}^{\left(t+1\right)}\left(\bm{x}_{i}\right)=\eta\cdot\rho_{i\to a}^{\left(t\right)}\left(\bm{x}_{i}\right)+\left(1-\eta\right)\cdot\left(\sum_{b\in\partial i\smallsetminus a}\alpha_{i\leftarrow b}^{\left(t\right)}\left(\bm{x}_{i}\right)\right),
+\end{equation}
+
+\end_inset
+
+which is crucial in some problems, as in general the update equations may
+ not converge.
+ Moreover, they propose to execute the updates in the following order:
+\end_layout
+
+\begin_layout Enumerate
+Update all availabilities; 
+\end_layout
+
+\begin_layout Enumerate
+Update all responsibilities; 
+\end_layout
+
+\begin_layout Enumerate
+Compute 
+\begin_inset Formula $\hat{\bm{c}}$
+\end_inset
+
+ and terminate when decisions did not change for 10 iterations.
+ 
+\end_layout
+
+\begin_layout Standard
+In our proposed version of the algorithm we will leave the update order
+ unchanged but we will randomize the initializations in order to introduce
+ stochasticity and statistically study the behavior of the algorithms.
+\end_layout
+
+\begin_layout Subsection
+Local Entropy theory
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:let-1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Local Entropy Theory has been developed in the context of supervised learning,
+ where it has proved its success in 
+\shape italic
+Artificial Neural Networks
+\shape default
+ (ANN) and Contraints Satisfaction Problems (CSP) 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "baldassi_unreasonable_2016,baldassi_shaping_2019"
+literal "false"
+
+\end_inset
+
+.
+ The loss landscape of such problems is very rough and high dimensional,
+ nevertheless, many empirical 
+\shape italic
+recipes
+\shape default
+ have been found – e.g.
+ the use of specific losses and activation functions in ANN or Reinforcement
+ and Decimation in CSP – to construct algorithms which are able to target
+ very robust and rare minima, achieving impressive generalization properties.
+ This means that minima which are exponentially rare and hence hard to find
+ for most algorithms, become very attractive for different ones.
+ Moreover, these robust and rare minima have been shown to be 
+\shape italic
+flat
+\shape default
+; in particular, the spectrum of the Hessian of the loss function is composed
+ of two parts: the bulk centered near zero, and outliers away from the bulk
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sagun_eigenvalues_2016"
+literal "false"
+
+\end_inset
+
+.
+ Thus, these minima are surrounded by an exponential number of other good
+ minima, and one generally expects that this property will reflect in the
+ robustness of the solution.
+ 
+\end_layout
+
+\begin_layout Standard
+A general theory for these robust minima can be constructed moving from
+ the 
+\shape italic
+Gibbs Measure
+\shape default
+ used in the standard statistical mechanics formulation using, i.e.
+ 
+\begin_inset Formula 
+\begin{equation}
+p\left(x\right)=\frac{1}{Z}\:e^{-\beta E\left(\bm{x}\right)},
+\end{equation}
+
+\end_inset
+
+to a measure that suppresses the role of narrow local minima and favors
+ these rare but very dense regions, i.e.
+ 
+\begin_inset Formula 
+\begin{equation}
+P\left(\bm{x};\beta,y,\lambda\right)=\frac{1}{Z\left(\beta,y,\lambda\right)}\:e^{\:y\:\Phi\left(\bm{x},\beta,\lambda\right)}.
+\end{equation}
+
+\end_inset
+
+Here 
+\begin_inset Formula $\Phi\left(\bm{x},\beta,\lambda\right)$
+\end_inset
+
+ is called the 
+\shape italic
+local free entropy
+\shape default
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ has the role of inverse temperature.
+ 
+\begin_inset Formula $\Phi$
+\end_inset
+
+ involves both the energy term and a distance constraint between configurations
+ enforced by a Lagrange multiplier 
+\begin_inset Formula $\lambda$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{equation}
+\Phi\left(\bm{x},\beta,\lambda\right)=\ln\sum_{\left\{ \bm{x}^{\prime}\right\} }e^{-\beta E\left(\bm{x}^{\prime}\right)-\lambda\:d\left(\bm{x},\bm{x}^{\prime}\right)}.
+\end{equation}
+
+\end_inset
+
+In this setting, not only low-energy, but also dense regions of configurations
+ with high local entropy are favored.
+ The parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ controls how narrow/wide a minimum needs to be to have a significant statistica
+l weight.
+\end_layout
+
+\begin_layout Standard
+At this stage, a direct estimation of the local free entropy 
+\begin_inset Formula $\Phi$
+\end_inset
+
+ is not an easy task.
+ However, by choosing 
+\begin_inset Formula $y$
+\end_inset
+
+ to be a non-negative integer, one can rewrite the partition function as:
+ 
+\begin_inset Formula 
+\begin{align}
+Z\left(\beta,y,\lambda\right) & =\sum_{\left\{ \bm{x}^{*}\right\} }e^{\:y\:\Phi\left(\bm{x}^{*},\beta,\lambda\right)}\\
+ & =\sum_{\left\{ \bm{x}^{*}\right\} }\sum_{\left\{ \bm{x}^{a}\right\} }e^{-\beta\sum_{a=1}^{y}E\left(\bm{x}^{a}\right)-\lambda\:\sum_{a=1}^{y}d\left(\bm{x}^{*},\bm{x}^{a}\right)}.
+\end{align}
+
+\end_inset
+
+This form of 
+\begin_inset Formula $Z$
+\end_inset
+
+ can be interpreted as describing a system of 
+\begin_inset Formula $y+1$
+\end_inset
+
+ interacting replicas of the original system, one of which act as reference
+ 
+\begin_inset Formula $\bm{x}^{*}$
+\end_inset
+
+, and the other 
+\begin_inset Formula $\left\{ \bm{x}^{a}\right\} _{a=1}^{y}$
+\end_inset
+
+ are subject to the energy 
+\begin_inset Formula $E\left(\bm{x}\right)$
+\end_inset
+
+ and to the interaction with the reference.
+\end_layout
+
+\begin_layout Standard
+This formulation is particularly apt to the construction of algorithms which
+ are tuned to explore robust regions of the energy landscape.
+ By simply replicating the model and adding an elastic interaction term
+ between replicas one can induce the dynamics to converge on local entropy
+ minima.
+\end_layout
+
+\begin_layout Subsection
+rAP equations
+\end_layout
+
+\begin_layout Standard
+We will now use the ideas coming from the previous section to construct
+ a replicated version of the AP algorithm.
+ In particular, our aim is to construct an algorithm which, by giving more
+ weight to configurations with high local entropy, finds 
+\shape italic
+robust
+\shape default
+ solutions, where the idea of robustness of a solution in the AP context
+ will be elaborated in the next sections.
+\end_layout
+
+\begin_layout Standard
+We recall that the energy characterizing one single replica 
+\begin_inset Formula $a$
+\end_inset
+
+ of the AP factor graph is
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+We will use subscript 
+\series bold
+AP
+\series default
+ when referring to vanilla AP and 
+\series bold
+rAP
+\series default
+ when referring to the replicated problem.
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+E_{\textbf{AP}}\left(\bm{c}\right)=-\sum_{i=1}^{N}s\left(i,c_{i}\right)+\sum_{k=1}^{N}\delta_{k}\left(\boldsymbol{c}\right).
+\end{equation}
+
+\end_inset
+
+Following the recipe of the previous section we define the energy of the
+ system of 
+\begin_inset Formula $y$
+\end_inset
+
+ interacting replicas as 
+\begin_inset Formula 
+\begin{equation}
+E_{\textbf{rAP}}\left(\bm{c}^{*},\left\{ \bm{c}^{a}\right\} _{a=1}^{y}\right)=\sum_{a=1}^{y}E_{\textbf{AP}}\left(\bm{c}^{a}\right)+E_{\textbf{AP}}^{*}\left(\bm{c}^{*}\right)+\gamma\sum_{a=1}^{y}\:d\left(\bm{c}^{*},\bm{c}^{a}\right).\label{eq:energy-rAP}
+\end{equation}
+
+\end_inset
+
+Where 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ is the intensity of the interaction that couples the configurations of
+ the replicas to the reference system.
+ Note that the reference system has an energy 
+\begin_inset Formula $E_{\textbf{AP}}^{*}\left(\bm{c}^{*}\right)$
+\end_inset
+
+ which only involves the constraints enforcing valid configurations: 
+\begin_inset Formula 
+\begin{equation}
+E_{\textbf{AP}}^{*}\left(\bm{c}^{*}\right)=\sum_{k=1}^{N}\delta_{k}\left(\boldsymbol{c}{}^{*}\right),
+\end{equation}
+
+\end_inset
+
+and has therefore no information about similarities.
+ For the interaction term 
+\begin_inset Formula $d\left(\boldsymbol{c^{*}},\boldsymbol{c}^{a}\right)$
+\end_inset
+
+ we made the following choice: 
+\begin_inset Formula 
+\begin{equation}
+d\left(\boldsymbol{c^{*}},\boldsymbol{c}^{a}\right)=\sum_{i=1}^{N}d_{i}\left(c_{i}^{*},c_{i}^{a}\right)=\sum_{i=1}^{N}\delta_{c_{i}^{*},c_{i}^{a}};
+\end{equation}
+
+\end_inset
+
+if a replica variable points to a different exemplar than the one pointed
+ by the corresponding variable in the reference configuration, the energy
+ increases by an amount equal to 
+\begin_inset Formula $\gamma$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Given the energy function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:energy-rAP"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we can easily derive the corresponding Max-Sum equations as we did for
+ the AP energy function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:energy-ap"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Since the problem is symmetric in the replica index, we assume here that
+ each replica behaves in the same way and hence all the messages exchanged
+ on the edges of the graph do not depend on the replica index.
+ In this way we end out with a system which is very similar to the original
+ one, except that now each node also exchanges messages to 
+\begin_inset Formula $y-1$
+\end_inset
+
+ identical copies of itself through the reference replica.
+ 
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/tikz_2.pdf
+	width 50col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Replicated Affinity Propagation Factor Graph.
+
+\series default
+ The graph is drawn for the simple case of 
+\begin_inset Formula $N=3$
+\end_inset
+
+.
+ Each variable 
+\begin_inset Formula $c_{i}^{\left(*\right)}$
+\end_inset
+
+ contains both the information about node 
+\begin_inset Formula $i$
+\end_inset
+
+ being an exemplar or not, i.e.
+ 
+\begin_inset Formula $c_{i}=i$
+\end_inset
+
+, and about its candidate parent.
+ Information about the similarity between data-points is embedded only in
+ the real replica via the local fields 
+\begin_inset Formula $e^{-s\left(i,c_{i}\right)}$
+\end_inset
+
+.
+ In blue the interaction terms between different replicas.
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rAP_factor_graph-1"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From a message passing point of view, the interaction between the reference
+ configuration 
+\begin_inset Formula $\boldsymbol{c}^{*}$
+\end_inset
+
+ and the 
+\begin_inset Formula $y$
+\end_inset
+
+ identical replicas introduces two new sets of messages, that we denote
+ as 
+\begin_inset Formula $\alpha_{i}^{\uparrow/\downarrow}$
+\end_inset
+
+, that carry the information from the 
+\begin_inset Formula $y$
+\end_inset
+
+ copies of the original system to the reference factor graph (
+\begin_inset Formula $\uparrow$
+\end_inset
+
+), and back (
+\begin_inset Formula $\downarrow$
+\end_inset
+
+).
+ The factor graph corresponding to the energy function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:energy-rAP"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is shown in Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rAP_factor_graph-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The resulting message updates are (the complete derivation can be found
+ in the Appendix):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+ & r\left(i,k\right)=s\left(i,k\right)+a^{\downarrow}\left(i,k\right)-\max_{j:j\neq k}\Big[s\left(i,j\right)+a\left(i,j\right)+a^{\downarrow}\left(i,j\right)\Big]\\[6pt]
+ & r^{\left(*\right)}\left(i,k\right)=y\cdot a^{\uparrow}\left(i,k\right)-\max_{j:j\neq k}\Big[a^{\left(*\right)}\left(i,j\right)+y\cdot a^{\uparrow}\left(i,j\right)\Big]\\[6pt]
+ & a^{\left(*\right)}\left(i,k\right)=\begin{cases}
+\sum_{j:j\neq k}\max\left(0,\:r^{\left(*\right)}\left(j,k\right)\right) & \text{for}\:k=i\\[6pt]
+\min\Big[\:0,\:\:r^{\left(*\right)}\left(k,k\right)+\sum_{j:j\neq i,k}\max\left(0,\:r^{\left(*\right)}\left(j,k\right)\right)\Big] & \text{for}\:k\neq i
+\end{cases}\\
+ & a^{\uparrow}\left(i,k\right)=\max\left\{ \max_{j}\left[s\left(i,j\right)+a\left(i,j\right)\right],\gamma+s\left(i,k\right)+a\left(i,k\right)\right\} \\
+ & a^{\downarrow}\left(i,k\right)=\nonumber \\
+ & =\max\left\{ \max_{j}\left[a^{\left(*\right)}\left(i,j\right)+\left(y-1\right)\cdot a^{\uparrow}\left(i,j\right)\right],\gamma+a^{\left(*\right)}\left(i,k\right)+\left(y-1\right)\cdot a^{\uparrow}\left(i,k\right)\right\} .
+\end{align}
+
+\end_inset
+
+Where the superscript 
+\begin_inset Formula $\left(*\right)$
+\end_inset
+
+ refers to the reference configuration as usual.
+ As can be seen from the above equations, the messages for the replica and
+ the reference graph are the same as in AP, with the only addition of the
+ 
+\begin_inset Formula $\alpha_{i}^{\uparrow/\downarrow}$
+\end_inset
+
+ messages that carry the interaction.
+ Note that in the 
+\begin_inset Formula $\gamma\to0$
+\end_inset
+
+ limit the update equation for the replicas will converge to the same fixed
+ point as the AP equations (is that true?), as it must be.
+\end_layout
+
+\begin_layout Standard
+As pointed out in earlier works, the most convenient way to treat the interactio
+n intensity is via a scoping procedure, as in the simulated annealing algorithm:
+ the interaction term is initialized with a very small value, and it is
+ increased during the dynamics with a predefined scheduler, typically it
+ is increased exponentially.
+ In this way the system is given some space to explore the energy landscape
+ at the early stage of the dynamics, until for high values of 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ it will converge to a high local entropy minimum where all the replicas
+ and the reference configurations agree on the solution.
+\end_layout
+
+\begin_layout Section
+Experiments
+\end_layout
+
+\begin_layout Standard
+In this section, we show some performance analysis of rAP on some relevant
+ data-sets using AP as a baseline.
+ We study those datasets in which the robustness of the algorithm plays
+ an important role.
+ In particular, we investigate simple – but significant – examples with
+ two overlapped clusters embedded in a 2D Euclidean space.
+ The overlap makes the energy landscape rough and populated by many local
+ minima.
+\end_layout
+
+\begin_layout Standard
+The analysis for each data-set is carried out as follows:
+\end_layout
+
+\begin_layout Enumerate
+Given the data and the labels for each point, the similarity matrix is computed
+ taking the negative Euclidean distance between points.
+ The self-similarity is tuned so that the algorithms find the correct number
+ of clusters; 
+\end_layout
+
+\begin_layout Enumerate
+In order to statistically study the behavior of the algorithms, in addition
+ to the case in which all the messages are initialized to zero, a certain
+ number of runs (
+\begin_inset Formula $\sim50$
+\end_inset
+
+) is executed with randomly initialized messages near zero – i.e.
+ 
+\begin_inset Formula $\mathcal{N}\left(0,10^{-4}\right)$
+\end_inset
+
+; 
+\end_layout
+
+\begin_layout Enumerate
+For each run, the energy and accuracy – when compared to the ground truth
+ – of the configuration are computed; 
+\end_layout
+
+\begin_layout Enumerate
+The (approximate) probability distribution function coming from the different
+ runs is plotted for both energy and accuracy; 
+\end_layout
+
+\begin_layout Enumerate
+In order to visualize the position of the exemplars chosen by each algorithm,
+ we provide 2D plots of the dataset where each point size corresponds to
+ the number of times a certain point has been chosen to be an exemplar;
+ 
+\end_layout
+
+\begin_layout Enumerate
+Finally, to further investigate the 
+\shape italic
+robustness
+\shape default
+ of each algorithm, we perturb the solutions moving the exemplars to their
+ 
+\begin_inset Formula $k$
+\end_inset
+
+-th nearest neighbors and study how the energy and accuracy of the resulting
+ configurations behave.
+\end_layout
+
+\begin_layout Subsection
+Overlapping gaussians
+\end_layout
+
+\begin_layout Standard
+We consider here data-sets 
+\family typewriter
+G2
+\family default
+ from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "franti_k-means_2018"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The data-sets can be found at 
+\begin_inset CommandInset href
+LatexCommand href
+name "\\texttt{cs.joensuu.fi}"
+target "https://cs.joensuu.fi/sipu/datasets/"
+literal "true"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+.
+ Each data-set is made of two Gaussian clusters with a variance 
+\begin_inset Formula $V$
+\end_inset
+
+ – which determines overlaps – embedded in a 
+\begin_inset Formula $D$
+\end_inset
+
+-dimensional space.
+ They are hence denoted 
+\family typewriter
+g2-D-V
+\family default
+.
+ In particular, we focus on 
+\family typewriter
+g2-2-40
+\family default
+ is made of points in 2D-space whose underlying distribution is a Gaussian
+ with variance 
+\begin_inset Formula $40$
+\end_inset
+
+ – cf.
+\begin_inset space ~
+\end_inset
+
+Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:g2-2-40_dataset"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ We randomly take 1024 out of the 2048 data-points available in the datasets.
+\end_layout
+
+\begin_layout Standard
+From Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:g2-2-40_energy"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:g2-2-40_accuracy"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we see that rAP finds lower energies and higher accuracies.
+ Moreover, from Figg.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:g2-2-40_box_energy"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:g2-2-40_box_energy_profile"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:g2-2-40_box_accuracy"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we also see that rAP configurations are more robust to perturbations –
+ they do not show large fluctuations when moving the exemplars to neighboring
+ points – both considering the energy and the accuracy.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/g2-2-40_dataset.pdf
+	lyxscale 40
+	width 80col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Visualization of the 
+\family typewriter
+g2-2-40
+\family default
+ dataset.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:g2-2-40_dataset"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/g2-2-40_energy_1207.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Energy distribution for
+\series default
+ 
+\family typewriter
+g2-2-40
+\family default
+.
+ Dashed lines correspond to zero message initializations.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:g2-2-40_energy"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/g2-2-40_accuracy_1207.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Accuracy distribution for
+\series default
+ 
+\family typewriter
+g2-2-40
+\family default
+.
+ Dashed lines correspond to zero message initializations.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:g2-2-40_accuracy"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/g2-2-40both.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Exemplars hits
+\series default
+ per datapoint for AP (on the left) and rAP (on the right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:g2-2-40_hits"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/g2-2-40_neighbors_energy_boxplot.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Exemplar k nearest neighbor Energy for
+\series default
+ 
+\family typewriter
+g2-2-40
+\family default
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:g2-2-40_box_energy"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/g2-2-40_neighbors_energy_diff_boxplot.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Exemplar k nearest neighbor Energy profile for
+\series default
+ 
+\family typewriter
+g2-2-40
+\family default
+.
+ On the y-axis the energy difference between the configuration – found by
+ (r)AP – with certain points as exemplars and the one found considering
+ the knn as exemplar is shown.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:g2-2-40_box_energy_profile"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/g2-2-40_neighbors_accuracy_boxplot.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Exemplar k nearest neighbor accuracy for
+\series default
+ 
+\family typewriter
+g2-2-40
+\family default
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:g2-2-40_box_accuracy"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Compenetrated gaussians
+\end_layout
+
+\begin_layout Standard
+We consider here two Gaussian clusters with different standard deviation
+ where one of them is completely englobed into the other.
+ 
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/total_overlap_dataset.pdf
+	lyxscale 40
+	width 80col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Visualization of the totally overlapped clusters.
+ The larger cluster is made up of 1000 poins, the smaller of 500.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:total_overlap_dataset"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/total_overlap_energy_1307.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Energy distribution
+\series default
+.
+ Dashed lines correspond to zero message initializations.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:total_overlap_energy"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/total_overlap_ri_1307.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Accuracy distribution
+\series default
+.
+ Dashed lines correspond to zero message initializations.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:total_overlap_accuracy"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/total_overlap_Gaussianboth.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Exemplars hits
+\series default
+ per datapoint for AP (on the left) and rAP (on the right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:total_overlap_hits"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/total_overlap_Gaussian_neighbors_energy_boxplot.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Exemplar k nearest neighbor Energy.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:total_overlap_box_energy"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/total_overlap_Gaussian_neighbors_energy_diff_boxplot.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Exemplar k nearest neighbor Energy profile.
+
+\series default
+ On the y-axis the energy difference between the configuration – found by
+ (r)AP – with certain points as exemplars and the one found considering
+ the knn as exemplar is shown.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:total_overlap_box_energy_profile"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/total_overlap_Gaussian_neighbors_accuracy_boxplot.pdf
+	lyxscale 40
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Exemplar k nearest neighbor accuracy.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:total_overlap_box_accuracy"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is an interesting study case considering rAP typically finds larger
+ energies compared to vanilla AP – cf.
+\begin_inset space ~
+\end_inset
+
+Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:total_overlap_energy"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Nevertheless, it reaches much higher accuracies, and it's more robust in
+ the sense that the accuracy is not affected by moving the exemplars to
+ its neighbors.
+ In Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:total_overlap_hits"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we notice that rAP chooses more consistently certain points to be exemplars
+ while the AP distribution of exemplars is much more spread out.
+\end_layout
+
+\begin_layout Section
+Conclusions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+Derivation of the Replicated Affinity Propagation Algorithm 
+\size large
+(rAP)
+\size default
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:derivation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We will now use the ideas coming from 
+\shape italic
+Local Entropy Theory
+\shape default
+ to construct a replicated version of the AP algorithm.
+ In particular, our aim is to construct an algorithm which, giving more
+ weight to configurations with high local entropy, finds 
+\shape italic
+robust
+\shape default
+ solutions.
+ In the context of AP, a solution can be 
+\shape italic
+robust
+\shape default
+ in this sense if, e.g.
+ moving one of the exemplars to its nearest neighbor, does not heavily affect
+ its goodness – energy or accuracy.
+ We will further investigate this concept in the next section.
+ We first go into the derivation of the algorithm.
+ 
+\end_layout
+
+\begin_layout Subsection
+Effective Energy of the Replicated System
+\end_layout
+
+\begin_layout Standard
+Considering the partition function of the replicated problem can be written
+ as 
+\begin_inset Formula 
+\begin{equation}
+Z\left(\beta,y,\lambda\right)=\sum_{\left\{ \bm{x}^{*}\right\} }\sum_{\left\{ \bm{x}^{a}\right\} }e^{\:-\beta\:E_{\textbf{rAP}}\left(\bm{c}^{*},\left\{ \bm{c}^{a}\right\} _{a=1}^{y}\right)},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We are now able to draw rAP factor graph by considering all the terms appearing
+ in 
+\begin_inset Formula $E_{\textbf{rAP}}$
+\end_inset
+
+.
+ As already discussed at the end of Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:let"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we will only have two replicas to consider, the reference and one of the
+ other 
+\begin_inset Formula $y$
+\end_inset
+
+, which are identical.
+ In the reference we do not have the local fields acting on variable nodes,
+ we will have interactions going through corresponding nodes of the two
+ replicas instead.
+ The resulting factor graph is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rAP_factor_graph"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/tikz_2.pdf
+	lyxscale 40
+	width 50col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Replicated Affinity Propagation Factor Graph.
+
+\series default
+ The graph is drawn for the simple case of 
+\begin_inset Formula $N=3$
+\end_inset
+
+.
+ Each variable 
+\begin_inset Formula $c_{i}^{\left(*\right)}$
+\end_inset
+
+ contains both the information about node 
+\begin_inset Formula $i$
+\end_inset
+
+ being an exemplar or not, i.e.
+ 
+\begin_inset Formula $c_{i}=i$
+\end_inset
+
+, and about its candidate parent.
+ Information about the similarity between data-points is embedded only in
+ the real replica via the local fields 
+\begin_inset Formula $e^{-s\left(i,c_{i}\right)}$
+\end_inset
+
+.
+ In blue the interaction terms between different replicas.
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rAP_factor_graph"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Message Updates Equations
+\end_layout
+
+\begin_layout Standard
+Starting from the factor graph, it is now possible to derive the message
+ updates equations, similarly to what it is done in AP
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Follows 
+\shape italic
+Supporting Online Material for Clustering by Passing Messages Between Data
+ Points - Brendan J.
+ Frey and Delbert Dueck
+\shape default
+, pp.
+ 10-13, 
+\begin_inset CommandInset href
+LatexCommand href
+name "\\texttt{link to sciencemag.org}"
+target "https://science.sciencemag.org/content/sci/suppl/2007/01/08/1136800.DC1/Frey.SOM.pdf"
+literal "true"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Max-sum algorithm
+\end_layout
+
+\begin_layout Standard
+Messages at this initial stage are vectors of length N.
+ The 
+\begin_inset Formula $\rho$
+\end_inset
+
+-messages going from variable nodes 
+\begin_inset Formula $c_{i}$
+\end_inset
+
+ to factor nodes 
+\begin_inset Formula $f_{i}$
+\end_inset
+
+ can be computed as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho_{i\to k}\left(c_{i}\right)=s\left(i,c_{i}\right)+\sum_{k^{\prime}\neq k}\alpha_{i\leftarrow k^{\prime}}\left(c_{i}\right)+\alpha_{i}^{\downarrow}\left(c_{i}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and similarly, the corresponding messages in the auxiliary replica
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The auxiliary replica will be denoted with a star *.
+\begin_inset Newline newline
+\end_inset
+
+We will use the superscript (*) for messages which have the same form in
+ both replicas.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho_{i\to k}^{*}\left(c_{i}^{*}\right)=\sum_{k^{\prime}\neq k}\alpha_{i\leftarrow k^{\prime}}^{*}\left(c_{i}^{*}\right)+y\cdot\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right),
+\end{equation}
+
+\end_inset
+
+where the interaction messages are denoted by 
+\begin_inset Formula $\alpha^{\uparrow/\downarrow}$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ appears because we have 
+\begin_inset Formula $y$
+\end_inset
+
+ identical replicas interacting with the reference.
+\end_layout
+
+\begin_layout Standard
+Messages sent from function to variables – for both real and auxiliary replicas
+ – do not involve the interaction messages hence they are computed as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha_{i\leftarrow k}^{\left(*\right)}\left(c_{i}^{\left(*\right)}\right)=\max_{j_{1},\dots,j_{i-1},j_{i+1},\dots,j_{N}}\Big[\delta_{k}^{\left(*\right)}\left(j_{1},\dots,j_{i-1},c_{i}^{\left(*\right)},j_{i+1},\dots,j_{N}\right)+\sum_{i^{\prime}\neq i}\rho_{i^{\prime}\to k}^{\left(*\right)}\left(j_{i^{\prime}}\right)\Big],
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+equivalently to vanilla AP.
+ Also the conventions used here are the same as in AP, to visualize messages
+ on the graph cf.
+\series bold
+
+\begin_inset space ~
+\end_inset
+
+
+\series default
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:AP_message_exchange"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/tikz_3.pdf
+	lyxscale 80
+	width 25col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Interaction messages.
+
+\series default
+ For clarity, only one interaction edge is shown here.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rAP_interaction_messages"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now define a set of messages going between replicas.
+ We would have four different kind of messages, i.e.
+ the ones going from variable node to factor and vice versa, for both the
+ real and auxiliary replica – see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rAP_interaction_messages"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ However, considering all the factors here involve only two variable nodes,
+ the resulting messages will only be two.
+\end_layout
+
+\begin_layout Standard
+At this stage we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\rho_{i}^{\uparrow}\left(c_{i}\right) & = & s\left(i,c_{i}\right)+\sum_{k^{\prime}}\alpha_{i\leftarrow k^{\prime}}\left(c_{i}\right)\\
+\rho_{i}^{\downarrow}\left(c_{i}^{*}\right) & = & \sum_{k^{\prime}}\alpha_{i\leftarrow k^{\prime}}^{*}\left(c_{i}^{*}\right)+\left(y-1\right)\cdot\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right)\\
+\alpha_{i}^{\downarrow}\left(c_{i}\right) & = & \max_{c_{i}^{*}}\Big[g_{i}\left(c_{i},c_{i}^{*}\right)+\rho_{i}^{\downarrow}\left(c_{i}^{*}\right)\Big]\\
+\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right) & = & \max_{c_{i}}\Big[g_{i}\left(c_{i},c_{i}^{*}\right)+\rho_{i}^{\uparrow}\left(c_{i}\right)\Big].
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Finally, plugging the interaction messages 
+\begin_inset Formula $\alpha^{\uparrow/\downarrow}$
+\end_inset
+
+ into 
+\begin_inset Formula $\rho^{\uparrow/\downarrow}$
+\end_inset
+
+ we get
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right) & = & \max_{c_{i}}\Big[g_{i}\left(c_{i},c_{i}^{*}\right)+s\left(i,c_{i}\right)+\sum_{k^{\prime}}\alpha_{i\leftarrow k^{\prime}}\left(c_{i}\right)\Big]\label{eq:alpha_mess1}\\
+\alpha_{i}^{\downarrow}\left(c_{i}\right) & = & \max_{c_{i}^{*}}\Big[g_{i}\left(c_{i},c_{i}^{*}\right)+\sum_{k^{\prime}}\alpha_{i\leftarrow k^{\prime}}^{*}\left(c_{i}^{*}\right)+\left(y-1\right)\cdot\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right)\Big].\label{eq:alpha_mess2}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The last ingredient in order to derive an 
+\series bold
+rAP
+\series default
+ algorithm is to define the interaction factors 
+\begin_inset Formula $g$
+\end_inset
+
+.
+ We will see in the following section that this choice is crucial in order
+ to simplify the update equations and obtain an algorithm with the same
+ time complexity as AP, which is 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Exemplar-wise interaction
+\end_layout
+
+\begin_layout Standard
+We propose here a first kind of interaction between replicas:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g_{i}\left(c_{i},c_{i}^{*}\right)=\gamma\cdot\left[\delta_{c_{i},c_{i}^{*},i}+\left(1-\delta_{c_{i},i}\right)\left(1-\delta_{c_{i}^{*},i}\right)\right],
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in which case two variable nodes positively interact if they are either
+ both exemplars or non-exemplars.
+\end_layout
+
+\begin_layout Standard
+We can now proceed to derive the message updates.
+ We follow the same simplification steps used in the AP paper to finally
+ get scalar messages.
+ We skip the derivation of the availabilities 
+\begin_inset Formula $a^{\left(*\right)}\left(i,j\right)$
+\end_inset
+
+ from the messages 
+\begin_inset Formula $\alpha_{i\leftarrow k}^{\left(*\right)}\left(c_{i}^{\left(*\right)}\right)$
+\end_inset
+
+ which exactly follows the one in the paper.
+\end_layout
+
+\begin_layout Standard
+The first step is to view all the vector messages as a sum of a constant
+ and variable component w.r.t.
+ 
+\begin_inset Formula $c_{i}$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+\rho_{i\to k}^{\left(*\right)}\left(c_{i}\right) & = & \tilde{\rho}_{i\to k}^{\left(*\right)}\left(c_{i}\right)+\bar{\rho}_{i\to k}^{\left(*\right)}\\
+\alpha_{i}^{\uparrow/\downarrow}\left(c_{i}\right) & = & \tilde{\alpha}_{i}^{\uparrow/\downarrow}\left(c_{i}\right)+\bar{\alpha}_{i}^{\uparrow/\downarrow}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Following AP we take 
+\begin_inset Formula 
+\begin{eqnarray}
+\bar{\rho}_{i\to k}^{\left(*\right)} & = & \max_{j\neq k}\rho_{i\to k}^{\left(*\right)}\left(j\right)\\
+\bar{\alpha}_{i}^{\downarrow} & = & \alpha_{i}^{\downarrow}\left(c_{i}:c_{i}\neq i\right)\\
+\bar{\alpha}_{i}^{\uparrow} & = & \alpha_{i}^{\uparrow}\left(c_{i}^{*}:c_{i}^{*}\neq i\right).
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This leads to
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho_{i\to k}\left(c_{i}\right)=\begin{cases}
+s\left(i,c_{i}\right)+\sum_{k^{\prime}\neq k}\bar{\alpha}_{i\leftarrow k^{\prime}}+\alpha_{i}^{\downarrow}\left(c_{i}\right)\:,\quad & \text{for }c_{i}=k\\[6pt]
+s\left(i,c_{i}\right)+\tilde{\alpha}_{i\leftarrow c_{i}}\left(c_{i}\right)+\sum_{k^{\prime}\neq k}\bar{\alpha}_{i\leftarrow k^{\prime}}+\alpha_{i}^{\downarrow}\left(c_{i}\right)\:,\quad & \text{for }c_{i}\neq k
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho_{i\to k}^{*}\left(c_{i}^{*}\right)=\begin{cases}
+\sum_{k^{\prime}\neq k}\bar{\alpha^{*}}_{i\leftarrow k^{\prime}}+y\cdot\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right)\:,\quad & \text{for }c_{i}^{*}=k\\[6pt]
+\tilde{\alpha^{*}}_{i\leftarrow c_{i}^{*}}\left(c_{i}^{*}\right)+\sum_{k^{\prime}\neq k}\bar{\alpha^{*}}_{i\leftarrow k^{\prime}}+y\cdot\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right)\:,\quad & \text{for }c_{i}^{*}\neq k
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right)=\begin{cases}
+\max_{c_{i}}\Big[\gamma\cdot\delta_{c_{i},i}+s\left(i,c_{i}\right)+\tilde{\alpha}_{i\leftarrow c_{i}}\left(c_{i}\right)\Big]+\sum_{k^{\prime}}\bar{\alpha}_{i\leftarrow k^{\prime}}\:,\quad & \text{for }c_{i}^{*}=i\\[6pt]
+\max_{c_{i}}\Big[\gamma\cdot\left(1-\delta_{c_{i},i}\right)+s\left(i,c_{i}\right)+\tilde{\alpha}_{i\leftarrow c_{i}}\left(c_{i}\right)\Big]+\sum_{k^{\prime}}\bar{\alpha}_{i\leftarrow k^{\prime}}\:,\quad & \text{for }c_{i}^{*}\neq i
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha_{i}^{\downarrow}\left(c_{i}\right)=\begin{cases}
+\max_{c_{i}^{*}}\Big[\gamma\cdot\delta_{c_{i}^{*},i}+\tilde{\alpha^{*}}_{i\leftarrow c_{i}^{*}}\left(c_{i}^{*}\right)+\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right)\Big]+\sum_{k^{\prime}}\bar{\alpha^{*}}_{i\leftarrow k^{\prime}}\:,\quad & \text{for }c_{i}=i\\[6pt]
+\max_{c_{i}^{*}}\Big[\gamma\cdot\left(1-\delta_{c_{i}^{*},i}\right)+\tilde{\alpha}_{i\leftarrow c_{i}^{*}}^{*}\left(c_{i}^{*}\right)+\alpha_{i}^{\uparrow}\left(c_{i}^{*}\right)\Big]+\sum_{k^{\prime}}\bar{\alpha}_{i\leftarrow k^{\prime}}^{*}\:,\quad & \text{for }c_{i}\neq i.
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Finally we define the scalar responsibilities and interaction messages as
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+r^{\left(*\right)}\left(i,k\right) & = & \tilde{\rho}_{i\to k}^{\left(*\right)}\left(c_{i}^{\left(*\right)}=k\right)=\rho_{i\to k}^{\left(*\right)}\left(c_{i}^{\left(*\right)}=k\right)-\bar{\rho}_{i\to k}^{\left(*\right)}=\nonumber \\
+ & = & \tilde{\rho}_{i\to k}^{\left(*\right)}\left(k\right)-\max_{j\neq k}\rho_{i\to k}^{\left(*\right)}\left(j\right)\\
+a^{\uparrow}\left(i\right) & = & \tilde{\alpha}_{i}^{\uparrow}\left(c_{i}^{*}=i\right)=\alpha_{i}^{\uparrow}\left(c_{i}^{*}=i\right)-\bar{\alpha}_{i}^{\uparrow}=\alpha_{i}^{\uparrow}\left(i\right)-\alpha_{i}^{\uparrow}\left(j:j\neq i\right)\\
+a^{\downarrow}\left(i\right) & = & \tilde{\alpha}_{i}^{\downarrow}\left(c_{i}=i\right)=\alpha_{i}^{\downarrow}\left(c_{i}=i\right)-\bar{\alpha}_{i}^{\downarrow}=\alpha_{i}^{\downarrow}\left(i\right)-\alpha_{i}^{\downarrow}\left(j:j\neq i\right)
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to get the modified AP equations listed below.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% 
+\backslash
+textbf{Modified AP equations.} 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+ The availabilities updates, 
+\begin_inset Formula $a\left(i,j\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $a^{*}\left(i,j\right)$
+\end_inset
+
+, stay the same as in vanilla AP.
+ The messages 
+\begin_inset Formula $a^{\uparrow}\left(i\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $a^{\downarrow}\left(i\right)$
+\end_inset
+
+ are, respectively, the ones going from the real replica to the auxiliary
+ one and vice versa.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{myMathBox}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[
+\end_layout
+
+\end_inset
+
+title=rAP update equations for Exemplar-wise interaction, colframe=black
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+]
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{align}
+ & r\left(i,k\right)=s\left(i,k\right)+\delta_{i,k}\cdot a^{\downarrow}\left(i\right)-\max_{j:j\neq k}\Big[s\left(i,j\right)+a\left(i,j\right)+\delta_{i,j}\cdot a^{\downarrow}\left(j\right)\Big]\\[6pt]
+ & r^{*}\left(i,k\right)=\delta_{i,k}\cdot y\cdot a^{\uparrow}\left(i\right)-\max_{j:j\neq k}\Big[a^{*}\left(i,j\right)+\delta_{i,j}\cdot y\cdot a^{\uparrow}\left(j\right)\Big]\\[6pt]
+ & a^{\left(*\right)}\left(i,k\right)=\begin{cases}
+\sum_{j:j\neq k}\max\left(0,\:r^{\left(*\right)}\left(j,k\right)\right),\quad & \text{for}\:k=i\\[6pt]
+\min\Big[\:0,\:\:r^{\left(*\right)}\left(k,k\right)+\sum_{j:j\neq i,k}\max\left(0,\:r^{\left(*\right)}\left(j,k\right)\right)\Big],\quad & \text{for}\:k\neq i
+\end{cases}\\
+ & a^{\uparrow}\left(i\right)=\max_{j}\Big[\gamma\delta_{i,j}+s\left(i,j\right)+a\left(i,j\right)\Big]-\max_{j}\Big[\gamma\left(1-\delta_{i,j}\right)+s\left(i,j\right)+a\left(i,j\right)\Big]\\
+ & a^{\downarrow}\left(i\right)=\max_{j}\Big[\gamma\delta_{i,j}+a^{*}\left(i,j\right)+\delta_{i,j}\cdot\left(y-1\right)\cdot a^{\uparrow}\left(j\right)\Big]\:+\nonumber \\
+ & \qquad\qquad\qquad\:\:-\max_{j}\Big[\gamma\left(1-\delta_{i,j}\right)+a^{*}\left(i,j\right)+\delta_{i,j}\cdot\left(y-1\right)\cdot a^{\uparrow}\left(j\right)\Big].
+\end{align}
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{myMathBox}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Cluster-wise interaction
+\end_layout
+
+\begin_layout Standard
+We compute here the message updates for the interaction term 
+\begin_inset Formula 
+\begin{equation}
+g_{i}\left(c_{i},c_{i}^{*}\right)=\gamma\cdot\delta_{c_{i},c_{i}^{*}},
+\end{equation}
+
+\end_inset
+
+i.e.
+ only variables that point to the same exemplar have a positive interaction.
+ In this case, also the interaction messages are 
+\begin_inset Formula $N\times N$
+\end_inset
+
+ matrices hence we do not decompose the vector messages 
+\begin_inset Formula $\alpha_{i}^{\uparrow/\downarrow}$
+\end_inset
+
+ depending on the value of 
+\begin_inset Formula $c_{i}$
+\end_inset
+
+.
+ Instead, taking equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:alpha_mess1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:alpha_mess2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), we just define 
+\begin_inset Formula 
+\begin{eqnarray}
+a^{\uparrow}\left(i,k\right) & = & \alpha_{i}^{\uparrow}\left(c_{i}^{*}=k\right)-\sum_{k^{\prime}}\bar{\alpha}_{i\leftarrow k^{\prime}}^{*}\\
+a^{\downarrow}\left(i,k\right) & = & \alpha_{i}^{\downarrow}\left(c_{i}=k\right)-\sum_{k^{\prime}}\bar{\alpha}_{i\leftarrow k^{\prime}},
+\end{eqnarray}
+
+\end_inset
+
+in order to drop the constant part of the messages, obtaining 
+\begin_inset Formula 
+\begin{eqnarray}
+a^{\uparrow}\left(i,k\right) & = & \max_{j}\Big[\gamma\delta_{k,j}+s\left(i,j\right)+a\left(i,j\right)\Big]\nonumber \\
+ & = & \max\left\{ \max_{j}\left[s\left(i,j\right)+a\left(i,j\right)\right],\gamma+s\left(i,k\right)+a\left(i,k\right)\right\} \\
+a^{\downarrow}\left(i,k\right) & = & \max_{j}\Big[\gamma\delta_{k,j}+a^{*}\left(i,j\right)+\left(y-1\right)\cdot a^{\uparrow}\left(i,j\right)\Big]\\
+ & = & \max\left\{ \max_{j}\left[a^{*}\left(i,j\right)+\left(y-1\right)\cdot a^{\uparrow}\left(i,j\right)\right],\gamma+a^{*}\left(i,k\right)+\left(y-1\right)\cdot a^{\uparrow}\left(i,k\right)\right\} \nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The resulting message updates are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{myMathBox}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+[
+\end_layout
+
+\end_inset
+
+ams gather, title=rAP update equations for Cluster-wise interaction, colframe=bl
+ack
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+]
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{align}
+ & r\left(i,k\right)=s\left(i,k\right)+a^{\downarrow}\left(i,k\right)-\max_{j:j\neq k}\Big[s\left(i,j\right)+a\left(i,j\right)+a^{\downarrow}\left(i,j\right)\Big]\\[6pt]
+ & r^{*}\left(i,k\right)=y\cdot a^{\uparrow}\left(i,k\right)-\max_{j:j\neq k}\Big[a^{*}\left(i,j\right)+y\cdot a^{\uparrow}\left(i,j\right)\Big]\\[6pt]
+ & a^{\left(*\right)}\left(i,k\right)=\begin{cases}
+\sum_{j:j\neq k}\max\left(0,\:r^{\left(*\right)}\left(j,k\right)\right),\quad & \text{for}\:k=i\\[6pt]
+\min\Big[\:0,\:\:r^{\left(*\right)}\left(k,k\right)+\sum_{j:j\neq i,k}\max\left(0,\:r^{\left(*\right)}\left(j,k\right)\right)\Big],\quad & \text{for}\:k\neq i
+\end{cases}\\
+ & a^{\uparrow}\left(i,k\right)=\max\left\{ \max_{j}\left[s\left(i,j\right)+a\left(i,j\right)\right],\gamma+s\left(i,k\right)+a\left(i,k\right)\right\} \\
+ & a^{\downarrow}\left(i,k\right)=\nonumber \\
+ & =\max\left\{ \max_{j}\left[a^{*}\left(i,j\right)+\left(y-1\right)\cdot a^{\uparrow}\left(i,j\right)\right],\gamma+a^{*}\left(i,k\right)+\left(y-1\right)\cdot a^{\uparrow}\left(i,k\right)\right\} .
+\end{align}
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{myMathBox}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% 
+\backslash
+section{Algorithms Analysis}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In this chapter, we show some performance analysis of rAP on different
+ data-sets using AP as a baseline.
+ The two main sources of data-sets we are going to consider are the original
+ AP paper 
+\backslash
+cite{frey_clustering_2007}
+\backslash
+footnote{The data-sets can be found at 
+\backslash
+href{http://genes.toronto.edu/index.php?q=affinity
+\backslash
+%20propagation}{
+\backslash
+texttt{genes.toronto.edu}}.} and the ones from 
+\backslash
+cite{franti_k-means_2018}
+\backslash
+footnote{The data-sets can be found at 
+\backslash
+href{https://cs.joensuu.fi/sipu/datasets/}{
+\backslash
+texttt{cs.joensuu.fi}}.}.
+ In addition to that, newly generated Gaussian clusters in 2D with varying
+ standard deviations are employed.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% The data-sets here can be divided into two main groups:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% 
+\backslash
+begin{itemize}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%     
+\backslash
+item[--] Data are points are embedded in an $N$-dimensional Euclidean space
+ and similarities are defined as negative Euclidean distance;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%     
+\backslash
+item[--] The similarity matrix is already given and there may or may not
+ be an underlying metric space.
+ In this case, $S$ could as well be sparse.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% 
+\backslash
+end{itemize}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% We will denote the number of clusters with $K$ and the number of points
+ in the data-set with $N$.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In the cases where a ground-truth is available, either clustering accuracy
+ (for the case of $K=2$, for which one can do cluster matching) or other
+ metrics which can be a proxy to the clustering accuracy -- e.g.
+ the 
+\backslash
+textit{Rand-index} 
+\backslash
+cite{rand_objective_1971}
+\backslash
+footnote{The 
+\backslash
+textit{Rand-index} considers pairs in the clusters and asks: 
+\backslash
+textit{"Is a pair of points which is in the same subset in clustering A,
+ also in the same subset in clustering B? And viceversa."} The index is then
+ computed as the number of agreements divided by the total number of pairs.}
+ -- are provided.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% 
+\backslash
+subsection{Gaussian clusters with varying overlaps and dimensions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% We consider here the data-set 
+\backslash
+texttt{G2} from 
+\backslash
+cite{franti_k-means_2018}.
+ Each data-set is made of two Gaussian clusters with a variance $V$ -- which
+ determines overlaps -- embedded in a $D$-dimensional space.
+ They are hence denoted 
+\backslash
+texttt{g2-D-V}, e.g.
+ 
+\backslash
+texttt{g2-2-30} is made of points in 2D-space whose underlying distribution
+ is a Gaussian with variance 30.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% 
+\backslash
+subsection{Document Summarization}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% 
+\backslash
+subsection{High Dimensional Data-sets}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% 
+\backslash
+subsection{DATA NAME N}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "pdm"
+options "unsrturl"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
