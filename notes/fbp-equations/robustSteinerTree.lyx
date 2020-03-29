@@ -1,0 +1,464 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Steiner Tree Problem
+\end_layout
+
+\begin_layout Section
+"Statistical mechanics of Steiner trees"
+\end_layout
+
+\begin_layout Standard
+Notice that in this model the depth 
+\begin_inset Formula $d=1,\dotsc,d_{max}$
+\end_inset
+
+ is the distance from the root.
+ The root is one of the nodes, assume node 1, and has depth zerto 
+\begin_inset Formula $d_{1}=0$
+\end_inset
+
+ and is fixed from the start together with terminal nodes.
+ 
+\end_layout
+
+\begin_layout Standard
+Start from Max-Sum messages:
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}(x_{i}) & =-c_{ip_{i}}+\sum_{k\in\partial i/j}\phi_{k\to i}(x_{i})\\
+\phi_{k\to i}(x_{i}) & =\max_{x_{k}\vert f_{ik}\neq0}\psi_{k\to i}(x_{k})
+\end{align*}
+
+\end_inset
+
+then 
+\begin_inset Formula 
+\begin{align*}
+C_{i\to j}(d) & \equiv\psi_{i\to j}(d,j)=-c_{ij}+\sum_{k\in\partial i\backslash j}\phi_{k\to i}(d,j)\\
+ & \equiv-c_{ij}+\sum_{k\in\partial i\backslash j}E_{k\to i}(d)
+\end{align*}
+
+\end_inset
+
+where we introduced 
+\begin_inset Formula $\phi_{k\to i}(d,j\neq k)\equiv E_{k\to i}(d)$
+\end_inset
+
+.
+ Follows 
+\begin_inset Formula 
+\begin{align*}
+E_{k\to j}(d) & =\phi_{k\to j}(d,i\neq k)=\max_{d_{k},\pi_{k}:f_{kj}(d_{k},p_{k},d,i\neq k)}\psi_{k\to j}(d_{k},p_{k})\\
+ & =\max\left\{ \psi_{k\to j}(d+1,j),\max_{d'}\left\{ \max_{p_{k}\neq j,\emptyset}\psi_{k\to j}(d',p_{k})\right\} ,\max_{d'}\psi_{k\to j}(d',\emptyset)\right\} \\
+ & \equiv\max\left\{ C_{k\to j}(d+1),\max_{d'}A_{k\to j}(d'),\max_{d'}B_{k\to j}(d')\right\} \\
+ & \equiv\max\left\{ C_{k\to j}(d+1),\max\left\{ \max_{d'}A_{k\to j}(d'),B_{k\to j}\right\} \right\} \\
+ & \equiv\max\left\{ C_{k\to j}(d+1),D_{k\to j}\right\} ,
+\end{align*}
+
+\end_inset
+
+where we have used the following definitions:
+\begin_inset Formula 
+\begin{align*}
+A_{k\to j}(d') & \equiv\max_{p_{k}\neq j,\emptyset}\psi_{k\to j}(d',p_{k})\\
+B_{k\to j}(d') & \equiv\psi_{k\to j}(d',\emptyset)\\
+B_{k\to j} & \equiv\max_{d'}B_{k\to j}(d')\\
+D_{k\to j} & \equiv\max\left\{ \max_{d'}A_{k\to j}(d'),B_{k\to j}\right\} .
+\end{align*}
+
+\end_inset
+
+Now we notice that 
+\begin_inset Formula $\phi_{k\to j}(d,\emptyset)=D_{k\to j}$
+\end_inset
+
+, in fact:
+\begin_inset Formula 
+\begin{align}
+\phi_{k\to j}(d,\emptyset) & =\max_{d_{k},p_{k}:f_{kj}(d_{k},p_{k},d,\emptyset)\neq0}\psi_{k\to j}(d_{k},p_{k})\nonumber \\
+ & =\max_{d_{k}}\max_{p_{k}\neq j}\psi_{k\to j}(d_{k},p_{k})\nonumber \\
+ & =\max\left\{ \max_{d_{k}}\left\{ \max_{p_{k}\neq j,\emptyset}\psi_{k\to j}(d_{k},p_{k})\right\} ,\max_{d_{k}}\psi_{k\to j}(d_{k},\emptyset)\right\} \label{eq:phiempty}\\
+ & =\max\left\{ \max_{d_{k}}\left\{ A_{k\to j}(d_{k})\right\} ,B_{k\to j}\right\} \nonumber \\
+ & =D_{k\to j}\nonumber 
+\end{align}
+
+\end_inset
+
+notice that this quanity does not depend on the depth 
+\begin_inset Formula $d$
+\end_inset
+
+ since if 
+\begin_inset Formula $p_{j}=\emptyset$
+\end_inset
+
+ then 
+\begin_inset Formula $j$
+\end_inset
+
+ is not in the tree and its depth is not relevant.
+\begin_inset Formula 
+\begin{align*}
+A_{k\to j}(d) & =\max_{p_{k}\neq j,\emptyset}\psi_{k\to j}(d,p_{k})=\max_{p_{k}\neq j,\emptyset}\left\{ -c_{kp_{k}}+\sum_{k'\in\partial k\backslash j}\phi_{k'\to k}(d,p_{k})\right\} =\\
+ & =\max_{p_{k}\neq j,\emptyset}\left\{ -c_{kp_{k}}+\phi_{p_{k}\to k}(d,p_{k})+\sum_{k'\in\partial k\backslash j,p_{k}}\phi_{k'\to k}(d,p_{k})\right\} \\
+ & =\max_{p_{k}\neq j,\emptyset}\left\{ -c_{kp_{k}}+A_{p_{k}\to k}^{d-1}+\sum_{k'\in\partial k\backslash j,p_{k}}E_{k'\to k}(d)\right\} \\
+ & =\max_{p_{k}\neq j,\emptyset}\left\{ -c_{kp_{k}}+A_{p_{k}\to k}^{d-1}-E_{p_{k}\to k}(d)\right\} +\sum_{k'\in\partial k\backslash j}E_{k'\to k}(d).
+\end{align*}
+
+\end_inset
+
+ To sum up the messages are:
+\begin_inset Formula 
+\begin{align*}
+A_{i\to j}(d) & =\max_{k\in\partial i\backslash j}\left\{ -c_{ik}-E_{k\to i}(d)+A_{k\to i}(d-1)\right\} +\sum_{k\in\partial i\backslash j}E_{k\to i}(d)\\
+B_{i\rightarrow j} & =-c_{i\emptyset}+\sum_{k\in\partial i\backslash j}D_{k\rightarrow i}\\
+C_{i\to j}(d) & =-c_{ij}+\sum_{k\in\partial i\backslash j}E_{k\to i}(d)\\
+D_{i\to j} & =\max\left\{ B_{i\to j},\,\max_{d'}A_{i\to j}(d')\right\} \\
+E_{i\to j}(d) & =\max\left\{ D_{i\rightarrow j},\,C_{i\to j}(d+1)\right\} 
+\end{align*}
+
+\end_inset
+
+The marginals can be written in the following way
+\begin_inset Formula 
+\[
+\psi_{j}(d_{j},p_{j})=-c_{jp_{j}}+\sum_{k\in\partial j}\phi_{k\to j}(d_{j},p_{j})
+\]
+
+\end_inset
+
+and the optimum tree is given by 
+\begin_inset Formula $\arg\max\psi_{j}$
+\end_inset
+
+.
+ Remember that the root is fixed from the beginnning (node 1) and 
+\begin_inset Formula $d_{1}=0$
+\end_inset
+
+.
+ For all other nodes 
+\begin_inset Formula $j=2,\dotsc,N$
+\end_inset
+
+ we have:
+\begin_inset Formula 
+\[
+\arg\max_{d_{j}p_{j}}\psi_{j}(d_{j},p_{j})=\begin{cases}
+(d_{j}^{\star},p_{j}^{\star}\neq\emptyset) & \Rightarrow\text{j is a Steiner/Terminal node}\\
+(d_{j}^{\star},p_{j}^{\star}=\emptyset) & \Rightarrow\text{j is not in the tree}
+\end{cases}
+\]
+
+\end_inset
+
+The following expression is used for all Terminal nodes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+(d_{j}^{\star},p_{j}^{\star}\neq\emptyset)=\arg\max_{d_{j},p_{j}\neq\emptyset}\psi_{j}(d_{j},p_{j}) & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+\phi_{p_{j}\to j}(d_{j},p_{j})+\sum_{k\in\partial j\backslash p_{j}}\phi_{k\to j}(d_{j},p_{j})\right\} \\
+ & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+A_{p_{j}\to j}(d_{j}-1)+\sum_{k\in\partial j\backslash p_{j}}E_{k\to j}(d_{j})\right\} 
+\end{align*}
+
+\end_inset
+
+Then, for all the other nodes, either they are Steiner or belong to the
+ tree, we have to compare the two following expressions
+\begin_inset Formula 
+\begin{align*}
+\psi_{j}(d_{j}^{*},p_{j}^{*}\neq\emptyset)=\max_{d_{j},p_{j}\neq\emptyset}\psi_{j}(d_{j},p_{j}) & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+\phi_{p_{j}\to j}(d_{j},p_{j})+\sum_{k\in\partial j\backslash p_{j}}\phi_{k\to j}(d_{j},p_{j})\right\} \\
+ & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+A_{p_{j}\to j}(d_{j}-1)+\sum_{k\in\partial j\backslash p_{j}}E_{k\to j}(d_{j})\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+B_{j}\equiv\max_{d_{j}}\psi_{j}(d_{j},\emptyset) & =\max_{d_{j}}\left\{ -\left(c_{j\emptyset}\equiv0\right)+\sum_{k\in\partial j}\phi_{k\to j}(d_{j},\emptyset)\right\} \\
+ & =\max_{d_{j}}\left\{ \sum_{k\in\partial j}D_{k\to j}\right\} =\sum_{k\in\partial j}D_{k\to j}
+\end{align*}
+
+\end_inset
+
+where in the second euality we have used eqn.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:phiempty"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Then the optimum tree is given taking 
+\begin_inset Formula $\left(d_{j}^{*},p_{j}^{*}\neq\emptyset\right)$
+\end_inset
+
+ if 
+\begin_inset Formula $\psi_{j}(d_{j}^{*},p_{j}^{*}\neq\emptyset)>B_{j}$
+\end_inset
+
+ which means that node 
+\begin_inset Formula $j$
+\end_inset
+
+ is a Steiner or otherwise node 
+\begin_inset Formula $j$
+\end_inset
+
+ is not in the tree and it point to 
+\begin_inset Formula $\emptyset$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Robust algorithm 
+\end_layout
+
+\begin_layout Standard
+Define 
+\begin_inset Formula $f_{ij}\equiv g_{ij}g_{ji}$
+\end_inset
+
+ where 
+\begin_inset Formula $g_{jk}\equiv\left(1-\delta_{p_{k},j}\left(1-\delta_{d_{j},d_{k}-1}\right)\right)\left(1-\delta_{p_{k},j}\delta_{p_{j},\emptyset}\right)$
+\end_inset
+
+.
+ The max-sum messages (up to a normalization additive constant) are the
+ following:
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages inside a replica:
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}(x_{i}) & =-c_{ip_{i}}+\sum_{k\in\partial i/j}\phi_{k\to i}(x_{i})+\hat{\phi}_{R_{i}\to i}(d_{i})\\
+\phi_{k\to i}(x_{i}) & =\max_{x_{k}\vert f_{ik}\neq0}\psi_{k\to i}(x_{k})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages from/to interaction 
+\begin_inset Formula $R_{i}$
+\end_inset
+
+ and a replica:
+\begin_inset Formula 
+\begin{align*}
+\hat{\psi}_{i\to R_{i}}(x_{i}) & =-c_{ip_{i}}+\sum_{k\in\partial i}\phi_{k\to i}(x_{i})\\
+\hat{\phi}_{R_{i}\to i}(d_{i}) & =\max_{x_{i}^{*}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\tilde{\psi}_{i\to R_{i}}(x_{i}^{*})\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages from/to interaction 
+\begin_inset Formula $R_{i}$
+\end_inset
+
+ and the reference graph:
+\begin_inset Formula 
+\begin{align*}
+\tilde{\psi}_{i\to R_{i}}\left(x_{i}^{*}\right) & =\sum_{k\in\partial i}\phi_{k\to i}^{*}\left(x_{i}^{*}\right)+(y-1)\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right)\\
+\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right) & =\max_{x_{i}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\hat{\psi}_{i\to R_{i}}\left(x_{i}\right)\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages inside the reference graph:
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}^{*}\left(x_{i}^{*}\right) & =\sum_{k\in\partial i/j}\phi_{k\to i}^{*}\left(x_{i}^{*}\right)+y\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right)\\
+\phi_{k\to i}^{*}\left(x_{i}^{*}\right) & =\max_{x_{k}^{*}\vert f_{ik}\neq0}\psi_{k\to i}^{*}(x_{k}^{*})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that this derivation is valid only in the case where the interaction
+ between the reference graph and the replica depends only on the depth of
+ the site.
+ 
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages inside a replica:
+\begin_inset Formula 
+\begin{align*}
+A_{i\to j}(d) & =\max_{k\in\partial i\backslash j}\left\{ -c_{ik}-E_{k\to i}(d)+A_{k\to i}(d-1)\right\} +\sum_{k\in\partial i\backslash j}E_{k\to i}(d)+\hat{\phi}_{i}(d)\\
+B_{i\rightarrow j} & =-c_{i\emptyset}+\sum_{k\in\partial i\backslash j}D_{k\rightarrow i}+\max_{d'}\left\{ \hat{\phi}_{i}(d')\right\} \\
+C_{i\to j}(d) & =-c_{ij}+\sum_{k\in\partial i\backslash j}E_{k\to i}(d)+\hat{\phi}_{i}(d)\\
+D_{i\to j} & =\max\left\{ B_{i\to j},\,\max_{d'}A_{i\to j}(d')\right\} \\
+E_{i\to j}(d) & =\max\left\{ D_{i\rightarrow j},\,C_{i\to j}(d+1)\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages from/to interaction 
+\begin_inset Formula $R_{i}$
+\end_inset
+
+ and a replica:
+\begin_inset Formula 
+\begin{align*}
+F_{i}(d) & =\max_{k\in\partial i}\left\{ -c_{ik}-E_{k\to i}(d)+A_{k\to i}(d-1)\right\} +\sum_{k\in\partial i}E_{k\to i}(d)\\
+\hat{\phi}_{i}(d) & =\max_{d^{*}}\left\{ -\gamma R_{i}(d,d^{*})+G_{i}(d^{*})\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages from/to interaction 
+\begin_inset Formula $R_{i}$
+\end_inset
+
+ and the reference graph:
+\begin_inset Formula 
+\begin{align*}
+G_{i}(d^{*}) & =\max_{k\in\partial i}\left\{ -E_{k\to i}^{*}(d^{*})+A_{k\to i}^{*}(d^{*}-1)\right\} +\sum_{k\in\partial i}E_{k\to i}^{*}(d^{*})+(y-1)\tilde{\phi}_{i}(d^{*})\\
+\tilde{\phi}_{i}(d^{*}) & =\max_{d}\left\{ -\gamma R_{i}(d,d^{*})+F_{i}(d)\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages inside the reference graph: 
+\begin_inset Formula 
+\begin{align*}
+A_{i\to j}^{*}(d^{*}) & =\max_{k\in\partial i\backslash j}\left\{ -E_{k\to i}^{*}(d^{*})+A_{k\to i}^{*}(d^{*}-1)\right\} +\sum_{k\in\partial i\backslash j}E_{k\to i}^{*}(d^{*})+y\tilde{\phi}_{i}(d^{*})\\
+B_{i\rightarrow j}^{*} & =\sum_{k\in\partial i\backslash j}D_{k\rightarrow i}^{*}+\max_{d^{*}}\left\{ y\tilde{\phi}_{i}(d^{*})\right\} \\
+C_{i\to j}^{*}(d^{*}) & =\sum_{k\in\partial i/j}E_{k\to i}^{*}(d^{*})+y\tilde{\phi}_{i}(d^{*})\\
+D_{i\to j}^{*} & =\max\left\{ B_{i\to j}^{*},\,\max_{d'}A_{i\to j}^{*}(d')\right\} \\
+E_{i\to j}^{*}(d^{*}) & =\max\left\{ D_{i\rightarrow j}^{*},\,C_{i\to j}^{*}\left(d^{*}+1\right)\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The site marginals are defined in the following way:
+\begin_inset Formula 
+\[
+\psi_{i}\left(d_{i},p_{i}\right)=-c_{ip_{i}}+\sum_{k\in\partial i\backslash p_{i}}E_{k\rightarrow i}^{d}+A_{p_{i}\rightarrow i}^{d-1}+\hat{\phi}_{R_{i}\to i}(d_{i}).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

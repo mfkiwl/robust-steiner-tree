@@ -1,0 +1,1262 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\rightmargin 1cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Robust clustering with shallow trees
+\end_layout
+
+\begin_layout Section
+Max-Sum equations 
+\end_layout
+
+\begin_layout Standard
+Consider the energy function: 
+\begin_inset Formula 
+\begin{equation}
+E(\{p_{i},d_{i}\}_{i=1}^{N})=\sum_{i}s_{ip_{i}}-\sum_{i,j\in\partial i}h_{ij}+h_{ji}\,,\label{eq:ener}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $s_{ij}$
+\end_inset
+
+ is an 
+\begin_inset Formula $N\times(N+1)$
+\end_inset
+
+ matrix (not symmetric in general) that is defined as the dissimilarity
+ between the points 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ if 
+\begin_inset Formula $j\neq\mbox{root}$
+\end_inset
+
+ and 
+\begin_inset Formula $s_{i,\mbox{root}}=\lambda$
+\end_inset
+
+.
+ The term 
+\begin_inset Formula $(h_{ij}+h_{ji})$
+\end_inset
+
+ is a symmetric constraint that guarantees that the solution describes a
+ tree
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+h_{ij}=\begin{cases}
+0 & \{p_{i}=j\implies d_{i}=d_{j}+1\}\\
+-\infty & \mbox{{otherwise}}
+\end{cases}\,.\label{eq:constraint}
+\end{equation}
+
+\end_inset
+
+The BP equations are:
+\begin_inset Formula 
+\begin{align}
+P_{i\to j}(d_{i},p_{i}) & \propto e^{-\beta s_{ip_{i}}}\prod_{k\in\partial i/j}Q_{k\to i}(d_{i},p_{i})\nonumber \\
+Q_{k\to i}(d_{i},p_{i}) & \propto\sum_{d_{k},p_{k}}P_{k\to i}(d_{k},p_{k})\,e^{\beta\left(h_{ik}+h_{ki}\right)}\label{eq:bp-eq}
+\end{align}
+
+\end_inset
+
+We then make the change of variables 
+\begin_inset Formula $\psi_{i\to j}=\beta^{-1}\log P_{i\to j}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{i\to j}=\beta^{-1}\log Q_{i\to j}$
+\end_inset
+
+.
+ The 
+\begin_inset Formula $\beta\to\infty$
+\end_inset
+
+ limit of the BP equations reads:
+\begin_inset Formula 
+\begin{align}
+\psi_{i\to j}(d_{i},p_{i}) & =-s_{ip_{i}}+\sum_{k\in\partial i/j}\phi_{k\to i}(d_{i},p_{i})\nonumber \\
+\phi_{k\to i}(d_{i},p_{i}) & =\max_{d_{k},p_{k}:\mid f_{ik}\neq0}\psi_{k\to i}(d_{k},p_{k})\,.\label{eq:max-sum}
+\end{align}
+
+\end_inset
+
+Where 
+\begin_inset Formula $f_{ik}=g_{ik}g_{ki}$
+\end_inset
+
+, with 
+\begin_inset Formula $g_{ik}=\lim_{\beta\to\infty}e^{\beta h_{ik}}=1-\delta_{p_{i}k}\left(1-\delta_{d_{k}d_{i}-1}\right)$
+\end_inset
+
+.
+ Note that 
+\begin_inset Formula $\phi_{k\to i}$
+\end_inset
+
+ depends on 
+\begin_inset Formula $d_{i},p_{i}$
+\end_inset
+
+ through the maximization constraint 
+\begin_inset Formula $f_{ik}$
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/factor_graph_bp.pdf
+	lyxscale 20
+	scale 30
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Factor graph for a 
+\begin_inset Formula $4$
+\end_inset
+
+ variables model.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:bp-fact"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Marginals and fixed point variables assignement
+\end_layout
+
+\begin_layout Standard
+Once the messages above have converged to a fixed point, the fixed point
+ variables 
+\begin_inset Formula $\left\{ d_{i},p_{i}\right\} _{i=1}^{N}$
+\end_inset
+
+ are chosen so that they maximize the single variable marginals:
+\begin_inset Formula 
+\[
+d_{i},p_{i}=\mbox{argmax}_{d_{i}^{'},p_{i}^{'}}\,\left\{ \psi_{i}(d_{i}^{'},p_{i}^{'})\right\} 
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+\psi_{i}(d_{i},p_{i})=-s_{ip_{i}}+\sum_{k\in\partial i}\phi_{k\to i}(d_{i},p_{i})\label{eq:marg}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Reinforcement
+\end_layout
+
+\begin_layout Standard
+The BP-R equations are obtained by adding on each site a local field whose
+ intensity is proportion to that site marginal:
+\begin_inset Formula 
+\begin{align}
+\psi_{i\to j}^{t+1}(d_{i},p_{i}) & =-s_{ip_{i}}+\sum_{k\in\partial i/j}\phi_{k\to i}^{t+1}(d_{i},p_{i})+\rho^{t}\psi_{i}^{t}(d_{i},p_{i})\nonumber \\
+\psi_{i}^{t+1}(d_{i},p_{i}) & =-s_{ip_{i}}+\sum_{k\in\partial i}\phi_{k\to i}^{t+1}(d_{i},p_{i})+\rho^{t}\psi_{i}^{t}(d_{i},p_{i})\label{eq:bp-R}
+\end{align}
+
+\end_inset
+
+where 
+\begin_inset Formula $\rho^{t}$
+\end_inset
+
+ is an external parameter that can vary during the equations iteration (e.g.
+ 
+\begin_inset Formula $\rho(t)=\rho_{0}\Delta\rho^{t}$
+\end_inset
+
+ ).
+\end_layout
+
+\begin_layout Section
+Max-Sum equations for 
+\begin_inset Formula $D=2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When the tree described by the solution is limited to have depth 
+\begin_inset Formula $D\leq2$
+\end_inset
+
+, we can express the messages using three values for each message passed
+ along a link.
+ We define:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\psi_{i\to j}^{1} & \equiv\psi_{i\to j}(d_{i}=1,p_{i}=\mbox{root})\label{eq:3val-psi}\\
+\psi_{i\to j}^{2} & \equiv\psi_{i\to j}(d_{i}=2,p_{i}=j)\nonumber \\
+\psi_{i\to j}^{3} & \equiv\max_{k\neq j,\mbox{root}}\psi_{i\to j}(d_{i}=2,p_{i}=k)\nonumber 
+\end{align}
+
+\end_inset
+
+for the cavity fields, and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\phi_{i\to j}^{1} & \equiv\phi_{i\to j}(d_{j}=1,p_{j}=\mbox{root})\nonumber \\
+\phi_{i\to j}^{2} & \equiv\phi_{i\to j}(d_{j}=2,p_{j}=\mbox{i})\nonumber \\
+\phi_{i\to j}^{3} & \equiv\phi_{i\to j}(d_{j}=2,p_{j}\neq\mbox{i})\label{eq:3val-phi}
+\end{align}
+
+\end_inset
+
+for the cavity bias.
+ Using these definitions, the Max-Sum equations 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:max-sum"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ simplify to:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\phi_{i\to j}^{1} & =\max\{\psi_{i\to j}^{1},\,\psi_{i\to j}^{2},\,\psi_{i\to j}^{3}\}\nonumber \\
+\phi_{i\to j}^{2} & =\psi_{i\to j}^{1}\nonumber \\
+\phi_{i\to j}^{3} & =\max\{\psi_{i\to j}^{1},\,\psi_{i\to j}^{3}\}\label{eq:max-sum-phi}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\psi_{i\to j}^{1} & =-\lambda+\sum_{k\in\partial i/j}\phi_{k\to i}^{1}\nonumber \\
+\psi_{i\to j}^{2} & =-s_{ij}+\sum_{k\in\partial i/j}\phi_{k\to i}^{3}\nonumber \\
+\psi_{i\to j}^{3} & =\max_{m\neq j,i,\mbox{root}}\left\{ -s_{im}+\sum_{k\in\partial i/j}\phi_{k\to i}(d_{i}=2,p_{i}=m)\right\} =\label{eq:max-sum-psi}\\
+ & =\max_{m\neq j,i,\mbox{root}}\left\{ -s_{im}+\phi_{m\to i}(m)+\phi_{m\to i}(p_{i}\neq m)-\phi_{m\to i}(p_{i}\neq m)+\sum_{k\in\partial i/\{j,m\}}\phi_{k\to i}(p_{i}\neq k)\right\} =\\
+ & =\max_{m\neq j,i,\mbox{root}}\left\{ -s_{im}+\phi_{m\to i}^{2}-\phi_{m\to i}^{3}\right\} +\sum_{k\in\partial i/j}\phi_{k\to i}^{3}
+\end{align}
+
+\end_inset
+
+Since these messages are defined up to a normalization (additive) constant,
+ we can achive a further simplification with the following choice for the
+ normalization:
+\begin_inset Formula 
+\begin{align}
+\psi_{i\to j}^{a^{'}} & \equiv\psi_{i\to j}^{a}-\psi_{i\to j}^{3}\qquad a=1,2,3\nonumber \\
+\phi_{i\to j}^{a^{'}} & \equiv\phi{}_{i\to j}^{a}-\phi_{i\to j}^{3}\qquad a=1,2,3\label{eq:max-sum-norm}
+\end{align}
+
+\end_inset
+
+From now on we remove the prime superscript as it should be clear to what
+ message we are referring to.
+ The Max-Sum equations then become:
+\begin_inset Formula 
+\begin{align*}
+\phi_{i\to j}^{3} & =\max\{\psi_{i\to j}^{1},0\}\\
+\phi_{i\to j}^{1} & =\max\{\psi_{i\to j}^{1},\,\psi_{i\to j}^{2},\,0\}-\phi_{i\to j}^{3}=\max\{\psi_{i\to j}^{2}-\phi_{i\to j}^{3},\,0\}\\
+\phi_{i\to j}^{2} & =\psi_{i\to j}^{1}-\phi_{i\to j}^{3}
+\end{align*}
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}^{3} & =\max_{k\neq j,\mbox{root}}\{-s_{ik}+\phi_{k\to i}^{2}\}\\
+\psi_{i\to j}^{1} & =-\lambda+\sum_{k\in\partial i/j}\phi_{k\to i}^{1}-\psi_{i\to j}^{3}\\
+\psi_{i\to j}^{2} & =-s_{ij}-\psi_{i\to j}^{3}
+\end{align*}
+
+\end_inset
+
+With this choice of the normalization we now need to carry only two values
+ for each message.
+ 
+\end_layout
+
+\begin_layout Subsection
+Marginals and fixed point variables assignement
+\end_layout
+
+\begin_layout Standard
+Using the three components of the messages, the marginals 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:marg"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be expressed as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\psi_{i}^{1} & \equiv\psi_{i}(d_{i}=1,p_{i}=\mbox{root})=-\lambda+\sum_{k\in\partial i}\phi_{k\to i}^{1}\\
+\psi_{i}^{2} & =\max_{m\neq i}\psi_{i}^{2}(m)\equiv\max_{m\neq i}\psi_{i}(d_{i}=2,p_{i}=m)=\max_{m\neq i}\left\{ -s_{im}+\phi_{m\to i}^{2}-\phi_{m\to i}^{3}\right\} +\sum_{k\in\partial i}\phi_{k\to i}^{3}
+\end{align*}
+
+\end_inset
+
+Using the normalized messages the second component becomes:
+\begin_inset Formula 
+\[
+\psi_{i}^{2}=\max_{m\neq i}\left\{ -s_{im}+\phi_{m\to i}^{2}\right\} 
+\]
+
+\end_inset
+
+If we call 
+\begin_inset Formula $M=\mbox{argmax}_{m}\psi_{i}(2,m)$
+\end_inset
+
+, then at the fixed point we can assing pointers and depths as follows:
+ 
+\begin_inset Formula 
+\begin{align*}
+\psi_{i}^{1} & >\psi_{i}^{2}\implies d_{i}=1,\,p_{i}=\mbox{root}\\
+\psi_{i}^{1} & <\psi_{i}^{2}\implies d_{i}=2,\,p_{i}=M
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Reinforcement
+\end_layout
+
+\begin_layout Standard
+In this setting the reinforcement Max-Sum equations read
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}^{1} & =-\lambda+\sum_{k\in\partial i/j}\phi_{k\to i}^{1}+\rho\psi_{i}^{1}\\
+\psi_{i\to j}^{2} & =-s_{ij}+\sum_{k\in\partial i/j}\phi_{k\to i}^{3}+\rho\psi_{i}^{2}(j)\\
+\psi_{i\to j}^{3} & =\max_{m\neq i,j}\left\{ -s_{im}+\phi_{m\to i}^{2}-\phi_{m\to i}^{3}\right\} +\sum_{k\in\partial i/j}\phi_{k\to i}^{3}+\rho\max_{m\neq j}\psi_{i}^{2}(m)
+\end{align*}
+
+\end_inset
+
+That with the normalized messages become
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}^{3} & =\max_{m\neq i,j}\left\{ -s_{im}+\phi_{m\to i}^{2}\right\} +\rho\max_{m\neq j}\psi_{i}^{2}(m)\\
+\psi_{i\to j}^{1} & =-\lambda+\sum_{k\in\partial i/j}\phi_{k\to i}^{1}-\psi_{i\to j}^{3}+\rho\psi_{i}^{1}\\
+\psi_{i\to j}^{2} & =-s_{ij}-\psi_{i\to j}^{3}+\rho\psi_{i}^{2}(j)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Replicated Max-Sum equations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/factor_graph_fbp.pdf
+	lyxscale 20
+	scale 40
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Factor graph for replicated BP.
+ The interaction between the auxiliary graph and the replicas is shown for
+ the 
+\begin_inset Formula $i$
+\end_inset
+
+-th variable only
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:replicated-factor-graph"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we consider 
+\begin_inset Formula $y$
+\end_inset
+
+ replicas of our original factor graph and couple each of them with a reference
+ factor graph.
+ The reference factor graph need only to impose that its fixed point messages
+ describe a tree, without the need for the factors representing the dissimilarit
+ies.
+ We choose to couple each replica variable with its corresponding variable
+ in the reference graph (see Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:replicated-factor-graph"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), giving a penalty for those variables in the replica graphs whose marginals
+ suggest they have a depth different from the one of the reference variable.
+ The energy function reads
+\begin_inset Formula 
+\begin{equation}
+\mathcal{E}=\sum_{a=1}^{y}E\left(\left\{ p_{i}^{a},d_{i}^{a}\right\} _{i=1}^{N}\right)+E^{*}\left(\left\{ p_{i}^{*},d_{i}^{*}\right\} _{i=1}^{N}\right)+\gamma\sum_{a=1}^{y}\sum_{i=1}^{N}R_{i}\left(d_{i}^{a},d_{i}^{*}\right)\label{eq:replicated-energy}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $E^{*}=-\sum_{i,j\in\partial i}\left(h_{ij}+h_{ji}\right)$
+\end_inset
+
+ is the energy of the reference graph, imposing that the reference pointers
+ and depths describe a tree with maximum depth two.
+ The interaction term 
+\begin_inset Formula $R_{i}\left(d_{i}^{a},d_{i}^{*}\right)=1-\delta_{d_{i}^{*}d_{i}^{a}}$
+\end_inset
+
+ is such that the energy increases by an amount 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ for each replica site whose depth does not agree with the reference variable
+ depth.
+ Note that the depths are allowed to assume only two values: 
+\begin_inset Formula $d_{i}\in\{1,2\}$
+\end_inset
+
+.
+ We start by rewriting the BP equations 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:bp-eq"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ at finite temperature for the partition function associated with the energy
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:replicated-energy"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Up to a normalization factor the messages read
+\end_layout
+
+\begin_layout Itemize
+BP Messages inside a replica:
+\begin_inset Formula 
+\begin{align*}
+P_{i\to j}^{(a)}(x_{i}^{(a)}) & \propto e^{-\beta s_{ip_{i}}}\prod_{k\in\partial i/j}Q_{k\to i}^{(a)}(x_{i}^{(a)})\cdot\hat{Q}_{R_{i}^{(a)}\to i}(d_{i}^{(a)})\\
+Q_{k\to i}^{(a)}(x_{i}^{(a)}) & \propto\sum_{x_{k}^{(a)}}P_{k\to i}^{(a)}(x_{k}^{(a)})\,e^{\beta\left(h_{ki}+h_{ik}\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+BP Messages from/to interaction 
+\begin_inset Formula $R_{i}^{(a)}$
+\end_inset
+
+ and a replica:
+\begin_inset Formula 
+\begin{align*}
+\hat{P}_{i^{(a)}\to R_{i}^{(a)}}(x_{i}^{(a)}) & \propto e^{-\beta s_{ip_{i}^{(a)}}}\prod_{k\in\partial i^{(a)}}Q_{k\to i^{(a)}}^{(a)}(x_{i}^{(a)})\\
+\hat{Q}_{R_{i}^{(a)}\to i^{(a)}}(d_{i}^{(a)}) & \propto\sum_{x_{i}^{*}}e^{-\beta\gamma R_{i}^{(a)}\left(d_{i}^{(a)},d_{i}^{*}\right)}\tilde{P}_{i^{*}\to R_{i}^{(a)}}(x_{i}^{*})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+BP Messages from/to interaction 
+\begin_inset Formula $R_{i}^{(a)}$
+\end_inset
+
+ and the reference graph:
+\begin_inset Formula 
+\begin{align*}
+\tilde{P}_{i^{*}\to R_{i}^{(a)}}\left(x_{i}^{*}\right) & \propto\prod_{k\in\partial i^{*}}Q_{k\to i^{*}}^{*}\left(x_{i}^{*}\right)\prod_{a=1}^{y-1}\tilde{Q}_{R_{i}^{(a)}\to i^{*}}\left(d_{i}^{*}\right)\\
+\tilde{Q}_{R_{i}^{(a)}\to i^{*}}\left(d_{i}^{*}\right) & \propto\sum_{p_{i}^{(a)},d_{i}^{(a)}}e^{-\beta\gamma R_{i}^{(a)}}\hat{P}_{i^{(a)}\to R_{i}^{(a)}}(d_{i}^{(a)})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+BP Messages inside the reference graph:
+\begin_inset Formula 
+\begin{align*}
+P_{i^{*}\to j}^{*}\left(x_{i}^{*}\right) & \propto\prod_{k\in\partial i^{*}/j}Q_{k\to i^{*}}^{*}\left(x_{i}^{*}\right)\prod_{a=1}^{y}\hat{Q}_{R_{i}^{(a)}\to i^{*}}\left(d_{i}^{*}\right)\\
+Q_{k\to i^{*}}^{*}\left(x_{i}^{*}\right) & \propto\sum_{x_{k}^{*}}P_{k^{*}\to i^{*}}^{*}(x_{i}^{*})\,e^{\beta\left(h_{ki}+h_{ik}\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where we introduced the notation: 
+\begin_inset Formula $x_{i}=\left(d_{i},p_{i}\right)$
+\end_inset
+
+ .
+ We now make the 
+\begin_inset Formula $\beta\to\infty$
+\end_inset
+
+ limit using the same change of variables as before.
+ We furthermore make the assumption that each replica passes the same messages
+ on corresponding links, that is the 
+\begin_inset Formula $y$
+\end_inset
+
+replica are indistinguishable.
+ The max sum messages (up to a normalization additive constant) are the
+ following
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages inside a replica:
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}(x_{i}) & =-s_{ip_{i}}+\sum_{k\in\partial i/j}\phi_{k\to i}(x_{i})+\hat{\phi}_{R_{i}^{(a)}\to i}(d_{i}^{(a)})\\
+\phi_{k\to i}(x_{i}) & =\max_{x_{k}:|f_{ik}\neq0}\psi_{k\to i}(x_{k})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages from/to interaction 
+\begin_inset Formula $R_{i}^{(a)}$
+\end_inset
+
+ and a replica:
+\begin_inset Formula 
+\begin{align*}
+\hat{\psi}_{i\to R_{i}}(x_{i}) & =-s_{ip_{i}}+\sum_{k\in\partial i}\phi_{k\to i}(x_{i})\\
+\hat{\phi}_{R_{i}\to i}(d_{i}) & =\max_{x_{i}^{*}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\tilde{\psi}_{i^{*}\to R_{i}}(x_{i}^{*})\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages from/to interaction 
+\begin_inset Formula $R_{i}^{(a)}$
+\end_inset
+
+ and the reference graph:
+\begin_inset Formula 
+\begin{align*}
+\tilde{\psi}_{i^{*}\to R_{i}}\left(x_{i}^{*}\right) & =\sum_{k\in\partial i^{*}}\phi_{k\to i^{*}}^{*}\left(x_{i}^{*}\right)+(y-1)\tilde{\phi}_{R_{i}\to i^{*}}\left(d_{i}^{*}\right)\\
+\tilde{\phi}_{R_{i}\to i^{*}}\left(d_{i}^{*}\right) & =\max_{x_{i}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\hat{\psi}_{i\to R_{i}}(x_{i})\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages inside the reference graph:
+\begin_inset Formula 
+\begin{align*}
+\psi_{i^{*}\to j}^{*}\left(x_{i}^{*}\right) & =\sum_{k\in\partial i^{*}/j}\phi_{k\to i^{*}}^{*}\left(x_{i}^{*}\right)+y\tilde{\phi}_{R_{i}\to i^{*}}\left(d_{i}^{*}\right)\\
+\phi_{k\to i^{*}}^{*}\left(x_{i}^{*}\right) & =\max_{x_{k}^{*}:|f_{ik}\neq0}\psi_{k\to i}^{*}(x_{k}^{*})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+D=2 case
+\end_layout
+
+\begin_layout Standard
+Once again for each directed link 
+\begin_inset Formula $\left(i\to j\right)$
+\end_inset
+
+ we need only to store three values for each of the messages 
+\begin_inset Formula $\psi_{i\to j},\phi_{i\to j},\psi_{i\to j}^{*},\phi_{i\to j}^{*}$
+\end_inset
+
+ as before (see eqs.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:3val-psi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:3val-phi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), while we need only two values for the 
+\begin_inset Formula $\hat{\phi}_{i},\tilde{\phi}_{i}$
+\end_inset
+
+ , since they depend only on the depth 
+\begin_inset Formula $d_{i}\in\{1,2\}$
+\end_inset
+
+, and two values for 
+\begin_inset Formula $\hat{\psi_{i}}$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $\hat{\psi}_{i}^{1}\equiv\hat{\psi}_{i}(d_{i}=1,p_{i}=\mbox{root})$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\psi}_{i}^{2}\equiv\max_{k}\hat{\psi}_{i}(d_{i}=2,p_{i}=k)$
+\end_inset
+
+ (and analogous definitions for the 
+\begin_inset Formula $\tilde{\psi}_{i}$
+\end_inset
+
+).
+ With these conventions the Max-Sum messages become:
+\end_layout
+
+\begin_layout Itemize
+Messages inside the original factor graph:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\psi_{i\to j}^{1} & =-\lambda+\sum_{k\in\partial i/j}\phi_{k\to i}^{1}+\hat{\phi_{i}^{1}}\nonumber \\
+\psi_{i\to j}^{2} & =-s_{ij}+\sum_{k\in\partial i/j}\phi_{k\to i}^{3}+\hat{\phi_{i}^{2}}\nonumber \\
+\psi_{i\to j}^{3} & =\max_{m\neq j,i,\mbox{root}}\{-s_{im}+\phi_{m\to i}^{2}-\phi_{m\to i}^{3}\}+\sum_{k\in\partial i/j}\phi_{k\to i}^{3}+\hat{\phi_{i}^{2}}\label{eq:fbp-psi}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\phi_{i\to j}^{1} & =\max\{\psi_{i\to j}^{1},\,\psi_{i\to j}^{2},\,\psi_{i\to j}^{3}\}\label{eq:fbp-phi}\\
+\phi_{i\to j}^{2} & =\psi_{i\to j}^{1}\nonumber \\
+\phi_{i\to j}^{3} & =\max\{\psi_{i\to j}^{1},\,\psi_{i\to j}^{3}\}\nonumber 
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Exchange messages
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\hat{\psi}_{i}^{1} & =-\lambda+\sum_{k\in\partial i}\phi_{k\to i}^{1}\\
+\hat{\psi}_{i}^{2} & =\max_{m\neq i,\mbox{root}}\left\{ -s_{im}+\phi_{m\to i}^{2}-\phi_{m\to i}^{3}\right\} +\sum_{k\in\partial i}\phi_{k\to i}^{3}\\
+\hat{\phi}_{i}^{1} & =\max\left\{ \tilde{\psi}_{i}^{1},\,\tilde{\psi}_{i}^{2}-\gamma\right\} \\
+\hat{\phi}_{i}^{2} & =\max\left\{ \tilde{\psi}_{i}^{1}-\gamma,\,\tilde{\psi}_{i}^{2}\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\tilde{\psi}_{i}^{1} & =\sum_{k\in\partial i}\phi_{k\to i}^{1*}+(y-1)\tilde{\phi}_{i}^{1}\\
+\tilde{\psi}_{i}^{2} & =\max_{m\neq i,\mbox{root}}\left\{ \phi_{m\to i}^{2*}-\phi_{m\to i}^{3*}\right\} +\sum_{k\in\partial i}\phi_{k\to i}^{3*}+(y-1)\tilde{\phi}_{i}^{2}\\
+\tilde{\phi}_{i}^{1} & =\max\left\{ \hat{\psi}_{i}^{1},\,\hat{\psi}_{i}^{2}-\gamma\right\} \\
+\tilde{\phi}_{i}^{2} & =\max\left\{ \hat{\psi}_{i}^{2}-\gamma,\,\hat{\psi}_{i}^{2}\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Messages inside the reference factor graph
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}^{1*} & =\sum_{k\in\partial i/j}\phi_{k\to i}^{1*}+y\tilde{\phi}_{i}^{1}\\
+\psi_{i\to j}^{2*} & =\sum_{k\in\partial i/j}\phi_{k\to i}^{3*}+y\tilde{\phi}_{i}^{2}\\
+\psi_{i\to j}^{3*} & =\max_{m\neq j,i,\mbox{root}}\{\phi_{m\to i}^{2*}-\phi_{m\to i}^{3*}\}+\sum_{k\in\partial i/j}\phi_{k\to i}^{3*}+y\tilde{\phi}_{i}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\phi_{i\to j}^{1*} & =\max\{\psi_{i\to j}^{1*},\,\psi_{i\to j}^{2*},\,\psi_{i\to j}^{3*}\}\\
+\phi_{i\to j}^{2*} & =\psi_{i\to j}^{1*}\\
+\phi_{i\to j}^{3*} & =\max\{\psi_{i\to j}^{1*},\,\psi_{i\to j}^{3*}\}
+\end{align*}
+
+\end_inset
+
+At this point we make the choice for the additive normalization constant
+ up to which the messages are defined.
+ Our choice follows the same line as before (for each link we subtract to
+ each message 
+\begin_inset Quotes eld
+\end_inset
+
+vector
+\begin_inset Quotes erd
+\end_inset
+
+ its last component), and the normalized messages read:
+\end_layout
+
+\begin_layout Itemize
+Normalized messages inside the original factor graph:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\phi_{i\to j}^{3} & =\max\{\psi_{i\to j}^{1},0\}\\
+\phi_{i\to j}^{1} & =\max\{\psi_{i\to j}^{1},\,\psi_{i\to j}^{2},\,0\}-\phi_{i\to j}^{3}=\max\{\psi_{i\to j}^{2}-\phi_{i\to j}^{3},\,0\}\\
+\phi_{i\to j}^{2} & =\psi_{i\to j}^{1}-\phi_{i\to j}^{3}
+\end{align*}
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}^{3} & =\max_{k\neq i,j,\mbox{root}}\{-s_{ik}+\phi_{k\to i}^{2}\}\\
+\psi_{i\to j}^{1} & =-\lambda+\sum_{k\in\partial i/j}\phi_{k\to i}^{1}+\hat{\phi}_{i}-\psi_{i\to j}^{3}\\
+\psi_{i\to j}^{2} & =-s_{ij}-\psi_{i\to j}^{3}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Normalized exchange messages
+\begin_inset Formula 
+\begin{align*}
+\hat{\psi}_{i} & =-\lambda+\sum_{k\in\partial i}\phi_{k\to i}^{1}-\max_{m\neq i,\mbox{root}}\left\{ -s_{im}+\phi_{m\to i}^{2}\right\} \\
+\hat{\phi}_{i} & =\max\left\{ \tilde{\psi}_{i},\,-\gamma\right\} -\max\left\{ \tilde{\psi}_{i}-\gamma,\,0\right\} =\theta\left(|\tilde{\psi}_{i}|-\gamma\right)\mbox{sign}\left(\tilde{\psi}_{i}\right)\gamma+\left[1-\theta\left(|\tilde{\psi}_{i}|-\gamma\right)\right]\tilde{\psi}_{i}\\
+\tilde{\psi}_{i} & =\sum_{k\in\partial i}\phi_{k\to i}^{1*}+(y-1)\tilde{\phi}_{i}-\max_{m\neq i,\mbox{root}}\left\{ \phi_{m\to i}^{2*}\right\} \\
+\tilde{\phi}_{i} & =\max\left\{ \hat{\psi}_{i},\,-\gamma\right\} -\max\left\{ \hat{\psi}_{i}-\gamma,\,0\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Normalized messages inside the reference factor graph
+\begin_inset Formula 
+\begin{align*}
+\phi_{i\to j}^{3*} & =\max\{\psi_{i\to j}^{1*},0\}\\
+\phi_{i\to j}^{1*} & =\max\{\psi_{i\to j}^{1*},\,\psi_{i\to j}^{2*},\,0\}-\phi_{i\to j}^{3*}=\max\{\psi_{i\to j}^{2*}-\phi_{i\to j}^{3*},\,0\}\\
+\phi_{i\to j}^{2*} & =\psi_{i\to j}^{1*}-\phi_{i\to j}^{3*}
+\end{align*}
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}^{3*} & =\max_{k\neq i,j,\mbox{root}}\{\phi_{k\to i}^{2*}\}\\
+\psi_{i\to j}^{1*} & =\sum_{k\in\partial i/j}\phi_{k\to i}^{1*}+y\tilde{\phi}_{i}-\psi_{i\to j}^{3*}\\
+\psi_{i\to j}^{2*} & =-\psi_{i\to j}^{3*}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figures/transfer_func.pdf
+	lyxscale 30
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The cavity bias 
+\begin_inset Formula $\tilde{\phi}$
+\end_inset
+
+ (
+\begin_inset Formula $\hat{\phi}$
+\end_inset
+
+) as a function of the cavity field 
+\begin_inset Formula $\hat{\psi}$
+\end_inset
+
+ (
+\begin_inset Formula $\tilde{\psi}$
+\end_inset
+
+) along the link connecting the replicas and the reference graph
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:transfer-func"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+The function 
+\begin_inset Formula $\tilde{\phi}_{i}\left(\hat{\psi}_{i};\gamma\right)$
+\end_inset
+
+ is shown in Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "fig:transfer-func"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\gamma\to\infty$
+\end_inset
+
+ limit
+\end_layout
+
+\begin_layout Standard
+In the 
+\begin_inset Formula $\gamma\to\infty$
+\end_inset
+
+ limit, 
+\begin_inset Formula $\hat{\phi}_{i}\to\tilde{\psi}_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{\phi}_{i}\to\hat{\psi}_{i}$
+\end_inset
+
+ (see also Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "fig:transfer-func"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ Only the first component of the cavity fields inside the replica and the
+ reference graph are modified:
+\begin_inset Formula 
+\begin{align*}
+\psi_{i\to j}^{1} & =-\lambda+\sum_{k\in\partial i/j}\phi_{k\to i}^{1}-\psi_{i\to j}^{3}+\tilde{\psi}_{i}\\
+\tilde{\psi_{i}} & =\sum_{k\in\partial i}\phi_{k\to i}^{1*}-\max_{m\neq i}\left\{ \phi_{m\to i}^{2*}\right\} +(y-1)\hat{\psi}_{i}=\psi_{i}^{1*}-\psi_{i}^{2*}+(y-1)\left(\psi_{i}^{1}-\psi_{i}^{2}\right)\\
+\psi_{i\to j}^{1*} & =\sum_{k\in\partial i/j}\phi_{k\to i}^{1*}-\psi_{i\to j}^{3*}+y\hat{\psi}_{i}\\
+\hat{\psi}_{i} & =-\lambda+\sum_{k\in\partial i}\phi_{k\to i}^{1}-\max_{m\neq i,\mbox{root}}\left\{ -s_{im}+\phi_{m\to i}^{2}\right\} =\psi_{i}^{1}-\psi_{i}^{2}
+\end{align*}
+
+\end_inset
+
+Where 
+\begin_inset Formula $\psi_{i}^{1}-\psi_{i}^{2}$
+\end_inset
+
+ is positive if the site 
+\begin_inset Formula $i$
+\end_inset
+
+wants to have depth 
+\begin_inset Formula $1$
+\end_inset
+
+and negative otherwise.
+ 
+\end_layout
+
+\begin_layout Standard
+LA 
+\begin_inset Formula $\phi_{i\to j}(d_{j},p_{j}=k\neq i)$
+\end_inset
+
+ NON DIPENDE DA K!!! ovvero il max nella def è inutile??
+\end_layout
+
+\begin_layout Subsubsection
+General D case
+\end_layout
+
+\begin_layout Standard
+Note that this derivation is valid only in the case where the interaction
+ between the reference graph and the replica depends only on the depth of
+ the site.
+ We only need to distinguish between the case 
+\begin_inset Formula $\psi_{i\to j}(d,p_{i}=j)$
+\end_inset
+
+ or 
+\begin_inset Formula $\phi_{i\to j}(d,p_{j}=i)$
+\end_inset
+
+ and the case 
+\begin_inset Formula $\psi_{i\to j}(d,p_{i}\neq j)$
+\end_inset
+
+ or 
+\begin_inset Formula $\phi_{i\to j}(d,p_{j}\neq i)$
+\end_inset
+
+.
+ We define 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+A_{i\to j}^{d} & =\max_{k\neq j}\psi_{i\to j}(d,k)\\
+C_{i\to j}^{d} & =\psi_{i\to j}(d,j)\\
+E_{i\to j}^{d} & =\phi_{i\to j}(d,k\neq i)=\max\left\{ \max_{d'}\max_{m\neq j}\psi_{i\to j}(d',m),\psi_{i\to j}(d+1,j)\right\} \\
+ & =\max\left\{ \max_{d'}A_{i\to j}^{d'},\,C_{i\to j}^{d+1}\right\} \\
+F_{i}(d) & =\max_{p_{i}}\hat{\psi}_{i}(d,p_{i})\\
+G_{i}(d^{*}) & =\max_{p_{i}^{*}}\tilde{\psi}_{i}(d^{*},p_{i}^{*})
+\end{align*}
+
+\end_inset
+
+The 
+\begin_inset Formula $A^{*},C^{*},E^{*}$
+\end_inset
+
+ are defined in the same way as the 
+\begin_inset Formula $A,C,E$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages inside a replica:
+\begin_inset Formula 
+\begin{align*}
+A_{i\to j}(d) & =\max_{k\in\partial i/j}\left\{ -s_{ik}-E_{k\to i}(d)+A_{k\to i}(d-1)\right\} +\sum_{k\in\partial i/j}E_{k\to i}(d)+\hat{\phi}_{i}(d)\\
+C_{i\to j}(d) & =-s_{ij}+\sum_{k\in\partial i/j}E_{k\to i}(d)+\hat{\phi}_{i}(d)\\
+E_{i\to j}(d) & =\max\left\{ \max_{d'}A_{i\to j}(d'),\,C_{i\to j}(d+1)\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages from/to interaction 
+\begin_inset Formula $R_{i}^{(a)}$
+\end_inset
+
+ and a replica:
+\begin_inset Formula 
+\begin{align*}
+F_{i}(d) & =\max_{m\in\partial i}\left\{ -s_{mi}-E_{m\to i}(d)+A_{m\to i}(d-1)\right\} +\sum_{k\in\partial i}E_{k\to i}(d)\\
+\hat{\phi}_{i}(d_{i}) & =\max_{d_{i}^{*}}\left\{ -\gamma R(d_{i},d_{i}^{*})+G_{i}(d_{i}^{*})\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages from/to interaction 
+\begin_inset Formula $R_{i}^{(a)}$
+\end_inset
+
+ and the reference graph:
+\begin_inset Formula 
+\begin{align*}
+G_{i}(d_{i}^{*}) & =\max_{m\in\partial i}\left\{ -E_{m\to i}^{*}(d_{i}^{*})+A_{m\to i}^{*}(d_{i}^{*}-1)\right\} +\sum_{k\in\partial i}E_{k\to i}^{*}(d_{i}^{*})+(y-1)\tilde{\phi}_{i}(d_{i}^{*})\\
+\tilde{\phi}_{i}(d_{i}^{*}) & =\max_{d_{i}}\left\{ -\gamma R_{i}(d_{i},d_{i}^{*})+F_{i}(d_{i})\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Max-Sum messages inside the reference graph:
+\begin_inset Formula 
+\begin{align*}
+A_{i\to j}^{*}(d^{*}) & =\max_{k\in\partial i/j}\left\{ -E_{k\to i}^{*}(d^{*})+A_{k\to i}^{*}(d^{*}-1)\right\} +\sum_{k\in\partial i/j}E_{k\to i}^{*}(d^{*})+y\tilde{\phi}_{i}(d^{*})\\
+C_{i\to j}^{*}(d^{*}) & =\sum_{k\in\partial i/j}E_{k\to i}^{*}(d^{*})+y\tilde{\phi}_{i}(d^{*})\\
+E_{i\to j}^{*}(d^{*}) & =\max\left\{ \max_{d'}A_{i\to j}^{*}(d'),\,C_{i\to j}^{*}(d+1)\right\} 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
