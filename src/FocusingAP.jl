@@ -471,11 +471,10 @@ function main(S::Matrix{Float64};
               init::String="gauss",   # mess init: [:gauss, :unif]
               α::Float64=0.1,        # mess are init with N(o,α) or U(-α, α)
               dataset::String="",
-              #trueA::Vector{Int}=Vector{Int}[], # True assignments, needed for clustering quality
               maxiter::Int=1000,
               damp::Float64=0.5,
               tol::Float64=1e-9,       # Update converged if max(mess(t) - mess(t-1)) < tol
-              λ::Float64=0.0,        # Self affinity parameter
+              λ::Union{Nothing,Float64}=nothing,        # Self affinity parameter
               y::Float64=0.0,        # number of replicas. fAP is used whenever y > 0 || γ > 0
               yfact::Float64=0.0,    # y(t) = y * (1+yfact)^t
               γ::Float64=0.0,        # elastic interaction. fAP is used whenever y > 0 || γ > 0
@@ -495,7 +494,7 @@ function main(S::Matrix{Float64};
     size(S, 2) == N || throw(ArgumentError("S must be a square matrix ($(size(S)) given)."))
     N >= 2 || throw(ArgumentError("At least two data points are required ($N given)."))
 
-    if λ > 0.0
+    if isa(λ, Float64)
         for i = 1:N
             S[i,i] = λ
         end

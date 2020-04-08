@@ -117,9 +117,12 @@ function distance(a::AbstractArray, b::AbstractArray)
     for i = 1:d
         dist += (a[i] - b[i])^2
     end
-    return sqrt(dist)
+    #return sqrt(dist)
+    return dist
 end
 
+# Takes as input a dimension * num_points matrix
+# and returns the similarity matrix
 function similarity(data::MF;
                     λ::F=0.0,
                     use_mean::Bool=false,
