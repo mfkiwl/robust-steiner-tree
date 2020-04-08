@@ -170,8 +170,6 @@ function explore(data::Union{MF, String};
 
         end # for n
 
-        @show size(pert_ener) size(pert_acc)
-
         # Write obs histograms over nsamples
         if nsamples > 1 && !isempty(outfile_histo)
             outfile_histo = "histo_" * outfile_histo
