@@ -13,7 +13,8 @@ module SteinerTreeFocusingBP
 using Random, Statistics, LinearAlgebra
 using ExtractMacro, DelimitedFiles, Printf
 using LightGraphs, GraphPlot
-using Gadfly, Colors, Cairo, Fontconfig
+#using Gadfly, Colors, Cairo, Fontconfig
+using Colors
 #using Clustering
 
 const F = Float64
