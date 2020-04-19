@@ -55,8 +55,7 @@ function main(N::Int;
                 push!(solw, sol[4]...)
             end
             if !isempty(outfile_w)
-                outfile_w *= "_D$Δ" * "_a$α.dat"
-                writedlm(outfile_w, solw)
+                writedlm(outfile_w * "_D$Δ" * "_a$α.dat", solw)
             end
 
             mean_ener = mean(ener)
