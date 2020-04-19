@@ -5,11 +5,10 @@ module SteinerTreeFocusingBP
 # *) Prize collecting steiner tree
 # *) Read wi0 from file
 # *) Check AP is ok
-# *) Fix various issues: mess convergence, deg 1 nodes, reinf, ecc.
+# *) Fix various issues: mess convergence, deg 1 nodes
 # *) Implement FBP
 # *) Move plotting functions to another file
 # *) Can I fix warning from Cairo and Compose?
-# *) Cleaner seed options
 
 using Random, Statistics, LinearAlgebra
 using ExtractMacro, DelimitedFiles, Printf
@@ -51,7 +50,7 @@ VarNode(Δ) = VarNode(Δ, 0, 0, Int[], VF[], false,
                      VF(), VPF(),       # B
                      VF(), VPF(),       # D
                      VVF(), VPF(),      # E
-                     VVF(), F(-myInf))  # Ψ, Γ
+                     VVF(), F(0))       # Ψ, Γ
 
 deg(v::VarNode) = length(v.neighs)
 
@@ -67,6 +66,7 @@ mutable struct FactorGraph
                          graph_type::Symbol=:fc,
                          c::Int=10, # (average) connectivity
                          root_id::Int = 1,
+                         distr::Symbol = :unif,
                          σ::Float64=1.0,
                          init::F=F(0))
 
@@ -128,7 +128,7 @@ mutable struct FactorGraph
                 vnodes[nn].Eout[k] = pointer(v.Ein[j], 1)
             end
         end
-        init_rand_w(vnodes, σ; seed=graph_seed)
+        init_rand_w(vnodes; distr=distr, σ=σ, seed=graph_seed)
 
         new(g, N, Δ, root_id, vnodes)
     end
@@ -288,12 +288,14 @@ function min_span_tree_cost(G::FactorGraph)
     @extract G g N vnodes root_id
 
     distmx = ones(N, N)
+    flag = false
     for (i, v) in enumerate(vnodes)
         for (j, nn) in enumerate(v.neighs)
-            v.w[j] > 1.0 && @warn "You have weights > 1, mst cost will be wrong"
+            v.w[j] > 1.0 && (flag = true)
             distmx[i,nn] = v.w[j]
         end
     end
+    flag && @warn "You have weights > 1, mst cost will be wrong"
 
     # Kruskal MST
     kruskal_edges = kruskal_mst(g, distmx)
@@ -318,13 +320,19 @@ function min_span_tree_cost(G::FactorGraph)
     return kruskal_edges, prim_edges # needed to plot the sol
 end
 
-function init_rand_w(vnodes::Vector{VarNode}, σ::Float64; seed::Int=0)
+function init_rand_w(vnodes::Vector{VarNode}; distr::Symbol=:unif, σ::F=1.0, seed::Int=0)
     seed > 0 && Random.seed!(seed)
 
     for (i, v) in enumerate(vnodes)
         for (j, nn) in enumerate(v.neighs)
             (i > nn) && continue
-            r = σ * rand()
+            if distr == :unif
+                r = σ * rand()
+            elseif distr == :exp
+                r = σ * randexp() #?
+            else
+                error("Please choose distr among [:unif, :exp]")
+            end
             v.w[j] = r
             k = findfirst(isequal(i), vnodes[nn].neighs)
             vnodes[nn].w[k] = r
@@ -372,7 +380,7 @@ function update_leave!(v::VarNode; root_id::Int=1, ρ::Float64=0.0)
             Ψ[1][d] = C + Ain[1][d-1]
         end
     end
-    Γ = is_terminal ? -myInf : Din[1] + ρ * Γ
+    v.Γ = is_terminal ? -myInf : Din[1] + ρ * v.Γ
 
     normalize_mess!(v, 1)
 
@@ -436,7 +444,7 @@ function update_mess!(v::VarNode; root_id::Int=1, ρ::Float64=0.0)
         normalize_mess!(v, j)
     end # for j
 
-    Γ = is_terminal ? -myInf : sumD + ρ * Γ
+    v.Γ = is_terminal ? -myInf : sumD + ρ * Γ
 
 end
 
@@ -487,7 +495,7 @@ end
 function assign_variables!(v::VarNode; root_id::Int=1)
     @extract v Γ Ψ Δ
 
-    #M, di, pi = Γ, -1, -1
+    #M, v.d, v.p = Γ, -1, -1
     M = -Inf
     for d = 1:Δ
         for j = 1:deg(v)
@@ -498,6 +506,7 @@ function assign_variables!(v::VarNode; root_id::Int=1)
             end
         end
     end
+
     if Γ > M
         v.p, v.d = -1, -1
     end
@@ -560,6 +569,21 @@ function cost(G::FactorGraph)
     return E
 end
 
+function solution_weights(G::FactorGraph)
+    @extract G N vnodes root_id
+
+    w = []
+    for i = 1:N
+        i == root_id && continue
+        pi = vnodes[i].p
+        if pi > 0
+            j = findfirst(isequal(pi), vnodes[i].neighs)
+            push!(w, vnodes[i].w[j])
+        end
+    end
+    return w
+end
+
 function main(N::Int, Δ::Int, α::Float64;
               seed::Int = 0,
               graph_seed::Int = 0,       # fixes random graph and weights generation
@@ -567,27 +591,30 @@ function main(N::Int, Δ::Int, α::Float64;
               root_id::Int = 1,          # which site is the root
               c::Int = 3,                # er/rrg average connectivity
               σ::Float64 = 1.0,          # weights init as σ * rand()
+              distr::Symbol = :unif,     # weights distr [:unif, :exp]
               mess_init::F = F(0),       # mess init as σ * rand()
               maxiter::Int = 100,
               tconv::Int = 10,           # stop if valid sol if found tconv consecutive steps
               ρ::Float64 = 0.0,          # reinforcement ρ(t) = ρ + t*ρsteps
               ρstep::Float64 = 0.0,      # reinforcement ρ(t) = ρ + t*ρsteps
               compute_mst::Bool = false, # compute min spannig tree
-              kmst_out::String="",       # plot Kruskal min spann tree
-              pmst_out::String="",       # plot Prim min spann tree
-              graph_out::String="",      # plot the graph instance
-              sol_out::String="")        # plot the solution tree
+              kmst_out::String = "",     # plot Kruskal min spann tree
+              pmst_out::String = "",     # plot Prim min spann tree
+              graph_out::String = "",    # plot the graph instance
+              sol_out::String = "",      # plot the solution tree
+              verbose::Bool = true)      # print iters on screen
+
+    seed > 0 && Random.seed!(seed)
 
     # Generate the instance (or read it from a file)
     # Use graph_seed to fix the random instance (graph+weights)
     if isa(graph, Symbol)
-        G = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, root_id=root_id, init=mess_init)
+        G = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
     elseif isa(graph, String)
         G = FactorGraph(Δ, α, graph; root_id=root_id, init=mess_init)
         input_graph = readdlm(graph)
         N = Int(maximum(input_graph[:,1:2]))
     end
-    seed > 0 && Random.seed!(seed)
 
     # Plot the instance
     if !isempty(graph_out)
@@ -610,14 +637,18 @@ function main(N::Int, Δ::Int, α::Float64;
 
         s = @sprintf("iter=%i, correct_steps=%i", t, correct_steps)
         ρ > 0.0 && (s *= @sprintf(", ρ=%3.3f ", ρ))
-        print("\r$s")
+        verbose && print("\r$s")
 
         correct_steps == tconv && break
         ρ += ρstep
     end
 
     E = cost(G)
-    correct_steps == tconv && @info "Final cost = $E"
+    converged = false
+    if correct_steps == tconv
+        verbose && @info "Final cost = $E"
+        converged = true
+    end
 
     # Plot the solution tree
     if !isempty(sol_out)
@@ -627,8 +658,16 @@ function main(N::Int, Δ::Int, α::Float64;
     terminal_nodes = [G.vnodes[i].is_terminal for i = 1:N]
     p = [G.vnodes[i].p for i = 1:N]
     d = [G.vnodes[i].d for i = 1:N]
+    w = solution_weights(G)
 
-    return E, terminal_nodes, p, d
+    # TODO: find a smarted way
+    num_steiner = 0
+    for i = 1:N
+        if G.vnodes[i].is_terminal == false && G.vnodes[i].p > 0
+            num_steiner += 1
+        end
+    end
+    return E, num_steiner, converged, w, terminal_nodes, p, d
 end
 
 end # module
