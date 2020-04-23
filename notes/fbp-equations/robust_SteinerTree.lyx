@@ -5,6 +5,10 @@
 \save_transient_properties true
 \origin unavailable
 \textclass article
+\begin_preamble
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -29,6 +33,7 @@
 \bibtex_command default
 \index_command default
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
 \use_geometry false
@@ -44,6 +49,7 @@
 \use_package undertilde 1
 \cite_engine basic
 \cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
@@ -81,6 +87,14 @@ Steiner Tree Problem
 
 \begin_layout Section
 "Statistical mechanics of Steiner trees"
+\end_layout
+
+\begin_layout Subsection
+Messages 
+\begin_inset Formula $A,B,C,D,E$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -198,71 +212,90 @@ E_{i\to j}(d) & =\max\left\{ D_{i\rightarrow j},\,C_{i\to j}(d+1)\right\}
 
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsection
 Root messages
 \end_layout
 
 \begin_layout Standard
+Let us call the root 
+\begin_inset Formula $r$
+\end_inset
+
+.
+ The messages that matter are only the ones going out from root.
+ The other do not appear in the updates of the other messages.
+ Messages are normalized to 0.
+\end_layout
+
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $B$
+\end_inset
+
+ we have
+\begin_inset Formula 
+\begin{align*}
+B_{r\to i} & \equiv\psi_{r\to i}\left(d_{r},p_{r}=\emptyset\right)=-\infty
+\end{align*}
+
+\end_inset
+
+for each 
+\begin_inset Formula $d_{r}=0,\dotsc,D$
+\end_inset
+
+ since the root must be part of the solution because is terminal.
+\end_layout
+
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $C$
+\end_inset
+
+ we have for every 
+\begin_inset Formula $d=1,\dotsc,D$
+\end_inset
+
+ that
+\begin_inset Formula 
+\begin{align*}
+C_{r\to i}(d) & \equiv\psi_{r\to i}\left(d_{r}=d,p_{r}=i\right)=-\infty
+\end{align*}
+
+\end_inset
+
+since the root should not point anyone.
+\end_layout
+
+\begin_layout Enumerate
+For the message 
+\begin_inset Formula $D$
+\end_inset
+
+
 \begin_inset Formula 
 \[
-B_{R\to i}=\psi_{R\to i}\left(d_{R},p_{R}=0\right)=-\infty
+D_{r\to i}\equiv\phi_{r\to i}(d_{i},p_{i}=\emptyset)=\max_{d_{r},p_{r}:f_{ri}\neq0}\psi_{r\to i}\left(d_{r},p_{r}\right)=\psi_{r\to i}\left(d_{r}=0,p_{r}=r\right)=0
 \]
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-since the root must be part of the solution
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-C_{R\to i}(d)=\psi_{R\to i}\left(d_{R}=d,p_{R}=i\right)=-\infty
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-since the root should not point anyone
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-D_{R\to i}=\phi(d_{i},p_{i}=0)=\max_{d_{R},p_{R}:f_{Ri}\neq0}\psi_{R\to i}\left(d_{i},p_{i}=0\right)=0
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 since the root state is always compatible with site 
 \begin_inset Formula $i$
 \end_inset
 
- not pointing anyone
+ not pointing anyone.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
+For messages
 \begin_inset Formula 
 \[
-E_{R\to i}(d)=\phi_{R\to i}\left(d_{i}=d,p_{i}=k\neq R\right)=0
+E_{r\to i}(d)\equiv\phi_{r\to i}\left(d_{i}=d,p_{i}=k\neq r\right)=\max_{d_{r},p_{r}:f_{ri}\neq0}\psi_{r\to i}\left(d_{r},p_{r}\right)=\psi_{r\to i}\left(d_{r}=0,p_{r}=r\right)=0
 \]
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 since the state is always compatible with site 
 \begin_inset Formula $i$
 \end_inset
@@ -271,39 +304,40 @@ since the state is always compatible with site
 \begin_inset Formula $k$
 \end_inset
 
-
+.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $A$
+\end_inset
+
+ we have
 \begin_inset Formula 
 \[
-A_{R\to i}(d)=\max_{p_{R}\neq i,0}\psi_{R\to i}\left(d_{R}=d,p_{R}\right)
+A_{r\to i}(d)=\max_{p_{r}\neq i,\emptyset}\psi_{r\to i}\left(d_{r}=d,p_{r}\right)=\begin{cases}
+0 & \text{if}\ d=0\\
+-\infty & \text{if}\ d>0
+\end{cases}
 \]
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 here we have 
-\begin_inset Formula $A_{R\to i}(d=0)=0$
+\begin_inset Formula $A_{r\to i}(d=0)=0$
 \end_inset
 
  since it is the only allowed value for 
-\begin_inset Formula $d_{R}$
+\begin_inset Formula $d_{r}$
 \end_inset
 
  and 
-\begin_inset Formula $A_{R\to i}(d\geq1)=-\infty$
+\begin_inset Formula $A_{r\to i}(d\geq1)=-\infty$
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-The message 
-\begin_inset Formula $A_{R\to i}(d=0)$
+ The message 
+\begin_inset Formula $A_{r\to i}(d=0)$
 \end_inset
 
  appears in the update of the 
@@ -321,7 +355,7 @@ The message
 )
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsection
 Marginals
 \end_layout
 
@@ -339,19 +373,23 @@ and the optimum tree is given by
 \end_inset
 
 .
- Remember that the root is fixed from the beginnning (node 1) and 
-\begin_inset Formula $d_{1}=0$
+ Remember that the root is 
+\begin_inset Formula $R$
+\end_inset
+
+ and is fixed from the beginnning, it has 
+\begin_inset Formula $d_{R}=0$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{R}=R$
 \end_inset
 
 .
- For all other nodes 
-\begin_inset Formula $j=2,\dotsc,N$
-\end_inset
-
- we have:
+ For all other nodes we have:
 \begin_inset Formula 
 \[
-\arg\max_{d_{j}p_{j}}\psi_{j}(d_{j},p_{j})=\begin{cases}
+\argmax_{d_{j},p_{j}}\psi_{j}(d_{j},p_{j})=\begin{cases}
 (d_{j}^{\star},p_{j}^{\star}\neq\emptyset) & \Rightarrow\text{j is a Steiner/Terminal node}\\
 (d_{j}^{\star},p_{j}^{\star}=\emptyset) & \Rightarrow\text{j is not in the tree}
 \end{cases}
@@ -365,24 +403,25 @@ The following expression is used for all Terminal nodes
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-(d_{j}^{\star},p_{j}^{\star}\neq\emptyset)=\arg\max_{d_{j},p_{j}\neq\emptyset}\psi_{j}(d_{j},p_{j}) & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+\phi_{p_{j}\to j}(d_{j},p_{j})+\sum_{k\in\partial j\backslash p_{j}}\phi_{k\to j}(d_{j},p_{j})\right\} \\
- & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+A_{p_{j}\to j}(d_{j}-1)+\sum_{k\in\partial j\backslash p_{j}}E_{k\to j}(d_{j})\right\} 
+(d_{j}^{\star},p_{j}^{\star}\neq\emptyset)=\argmax_{d_{j},p_{j}\neq\emptyset}\psi_{j}(d_{j},p_{j}) & =\argmax_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+\phi_{p_{j}\to j}(d_{j},p_{j})+\sum_{k\in\partial j\backslash p_{j}}\phi_{k\to j}(d_{j},p_{j})\right\} \\
+ & =\argmax_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+A_{p_{j}\to j}(d_{j}-1)+\sum_{k\in\partial j\backslash p_{j}}E_{k\to j}(d_{j})\right\} 
 \end{align*}
 
 \end_inset
 
-Then, for all the other nodes, either they are Steiner or belong to the
- tree, we have to compare the two following expressions
+Then, for all the other nodes, either they are Steiner or they don't belong
+ to the tree, we have to compare the two following expressions.
+ If they are Steiner:
 \begin_inset Formula 
 \begin{align}
-\psi_{j}(d_{j}^{*},p_{j}^{*}\neq\emptyset)=\max_{d_{j},p_{j}\neq\emptyset}\psi_{j}(d_{j},p_{j}) & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+\phi_{p_{j}\to j}(d_{j},p_{j})+\sum_{k\in\partial j\backslash p_{j}}\phi_{k\to j}(d_{j},p_{j})\right\} \label{eq:argmaxStein1}\\
- & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+A_{p_{j}\to j}(d_{j}-1)+\sum_{k\in\partial j\backslash p_{j}}E_{k\to j}(d_{j})\right\} \nonumber \\
- & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ \sum_{k\in\partial j}E_{k\rightarrow j}^{d}+\left(-c_{jp_{j}}-E_{p_{j}\rightarrow j}^{d}+A_{p_{j}\rightarrow j}^{d-1}\right)\right\} \nonumber 
+\psi_{j}(d_{j}^{*},p_{j}^{*}\neq\emptyset)=\max_{d_{j},p_{j}\neq\emptyset}\psi_{j}(d_{j},p_{j}) & =\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+\phi_{p_{j}\to j}(d_{j},p_{j})+\sum_{k\in\partial j\backslash p_{j}}\phi_{k\to j}(d_{j},p_{j})\right\} \label{eq:argmaxStein1}\\
+ & =\max_{d_{j},p_{j}\neq\emptyset}\left\{ -c_{jp_{j}}+A_{p_{j}\to j}(d_{j}-1)+\sum_{k\in\partial j\backslash p_{j}}E_{k\to j}(d_{j})\right\} \nonumber \\
+ & =\arg\max_{d_{j},p_{j}\neq\emptyset}\left\{ \sum_{k\in\partial j}E_{k\rightarrow j}^{d}+\left(-c_{jp_{j}}-E_{p_{j}\rightarrow j}^{d}+A_{p_{j}\rightarrow j}^{d-1}\right)\right\} .\nonumber 
 \end{align}
 
 \end_inset
 
-
+If they do not belong to the tree
 \end_layout
 
 \begin_layout Standard
@@ -598,11 +637,325 @@ The site marginals are defined in the following way:
 
 \end_inset
 
-Now take maximum of the two to find optimum 
+Now take maximum of the two to find the optimum 
 \begin_inset Formula $\left(d_{i}^{*},p_{i}^{*}\right)$
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsection
+Root messages
+\end_layout
+
+\begin_layout Standard
+For the replicas we have the following messages going out from the root:
+\end_layout
+
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $B$
+\end_inset
+
+ we have
+\begin_inset Formula 
+\begin{align*}
+B_{r\to i} & \equiv\psi_{r\to i}\left(d_{r},p_{r}=\emptyset\right)=-\infty
+\end{align*}
+
+\end_inset
+
+for each 
+\begin_inset Formula $d_{r}=0,\dotsc,D$
+\end_inset
+
+ since the root must be part of the solution because is terminal.
+\end_layout
+
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $C$
+\end_inset
+
+ we have for every 
+\begin_inset Formula $d=1,\dotsc,D$
+\end_inset
+
+ that
+\begin_inset Formula 
+\begin{align*}
+C_{r\to i}(d) & \equiv\psi_{r\to i}\left(d_{r}=d,p_{r}=i\right)=-\infty
+\end{align*}
+
+\end_inset
+
+since the root should not point anyone.
+\end_layout
+
+\begin_layout Enumerate
+For the message 
+\begin_inset Formula $D$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+D_{r\to i}\equiv\phi_{r\to i}(d_{i},p_{i}=\emptyset)=\max_{d_{r},p_{r}:f_{ri}\neq0}\psi_{r\to i}\left(d_{r},p_{r}\right)=\psi_{r\to i}\left(d_{r}=0,p_{r}=r\right)=0
+\]
+
+\end_inset
+
+since the root state is always compatible with site 
+\begin_inset Formula $i$
+\end_inset
+
+ not pointing anyone.
+\end_layout
+
+\begin_layout Enumerate
+For messages
+\begin_inset Formula 
+\[
+E_{r\to i}(d)\equiv\phi_{r\to i}\left(d_{i}=d,p_{i}=k\neq r\right)=\max_{d_{r},p_{r}:f_{ri}\neq0}\psi_{r\to i}\left(d_{r},p_{r}\right)=\psi_{r\to i}\left(d_{r}=0,p_{r}=r\right)=0
+\]
+
+\end_inset
+
+since the state is always compatible with site 
+\begin_inset Formula $i$
+\end_inset
+
+ pointing to 
+\begin_inset Formula $k$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $A$
+\end_inset
+
+ we have
+\begin_inset Formula 
+\[
+A_{r\to i}(d)=\max_{p_{r}\neq i,\emptyset}\psi_{r\to i}\left(d_{r}=d,p_{r}\right)=\begin{cases}
+0 & \text{if}\ d=0\\
+-\infty & \text{if}\ d>0
+\end{cases}
+\]
+
+\end_inset
+
+here we have 
+\begin_inset Formula $A_{r\to i}(d=0)=0$
+\end_inset
+
+ since it is the only allowed value for 
+\begin_inset Formula $d_{r}$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{r\to i}(d\geq1)=-\infty$
+\end_inset
+
+.
+ The message 
+\begin_inset Formula $A_{r\to i}(d=0)$
+\end_inset
+
+ appears in the update of the 
+\begin_inset Formula $A_{j\to k}(d=1)$
+\end_inset
+
+ messages, when the root is a neighbor of 
+\begin_inset Formula $j$
+\end_inset
+
+ (different from 
+\begin_inset Formula $k$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+For the messages in the reference replica we have the following messages
+ that go out from the root:
+\end_layout
+
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $B^{*}$
+\end_inset
+
+ we have
+\begin_inset Formula 
+\begin{align*}
+B_{r\to i}^{*} & \equiv\psi_{r\to i}^{*}\left(d_{r}^{*},p_{r}^{*}=\emptyset\right)=-\infty
+\end{align*}
+
+\end_inset
+
+for each 
+\begin_inset Formula $d_{r}^{*}=0,\dotsc,D$
+\end_inset
+
+ since the root must be part of the solution because is terminal.
+\end_layout
+
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $C^{*}$
+\end_inset
+
+ we have for every 
+\begin_inset Formula $d=1,\dotsc,D$
+\end_inset
+
+ that
+\begin_inset Formula 
+\begin{align*}
+C_{r\to i}^{*}(d^{*}) & \equiv\psi_{r\to i}^{*}\left(d_{r}^{*}=d,p_{r}^{*}=i\right)=-\infty
+\end{align*}
+
+\end_inset
+
+since the root should not point anyone.
+\end_layout
+
+\begin_layout Enumerate
+For the messages 
+\begin_inset Formula $D^{*}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+D_{r\to i}^{*}\equiv\phi_{r\to i}^{*}(d_{i}^{*},p_{i}^{*}=\emptyset)=\max_{d_{r}^{*},p_{r}^{*}:f_{ri}\neq0}\psi_{r\to i}\left(d_{r}^{*},p_{r}^{*}\right)=\psi_{r\to i}\left(d_{r}^{*}=0,p_{r}^{*}=r\right)=0
+\]
+
+\end_inset
+
+since the root state is always compatible with site 
+\begin_inset Formula $i$
+\end_inset
+
+ not pointing anyone.
+\end_layout
+
+\begin_layout Enumerate
+For messages
+\begin_inset Formula 
+\[
+E_{r\to i}^{*}(d^{*})\equiv\phi_{r\to i}^{*}\left(d_{i}^{*}=d^{*},p_{i}^{*}=k\neq r\right)=\max_{d_{r}^{*},p_{r}^{*}:f_{ri}\neq0}\psi_{r\to i}^{*}\left(d_{r}^{*},p_{r}^{*}\right)=\psi_{r\to i}^{*}\left(d_{r}^{*}=0,p_{r}^{*}=r\right)=0
+\]
+
+\end_inset
+
+since the state is always compatible with site 
+\begin_inset Formula $i$
+\end_inset
+
+ pointing to 
+\begin_inset Formula $k$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+For messages 
+\begin_inset Formula $A^{*}$
+\end_inset
+
+ we have
+\begin_inset Formula 
+\[
+A_{r\to i}^{*}(d^{*})=\max_{p_{r}^{*}\neq i,\emptyset}\psi_{r\to i}^{*}\left(d_{r}^{*}=d^{*},p_{r}^{*}\right)=\begin{cases}
+0 & \text{if}\ d^{*}=0\\
+-\infty & \text{if}\ d^{*}>0
+\end{cases}
+\]
+
+\end_inset
+
+we have 
+\begin_inset Formula $A_{r\to i}^{*}(d=0)=0$
+\end_inset
+
+ since it is the only allowed value for 
+\begin_inset Formula $d_{r}^{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{r\to i}^{*}(d\geq1)=-\infty$
+\end_inset
+
+.
+ The message 
+\begin_inset Formula $A_{r\to i}^{*}(d^{*}=0)$
+\end_inset
+
+ appears in the update of the 
+\begin_inset Formula $A_{i\to k}(d=1)$
+\end_inset
+
+ messages, when the root is a neighbor of 
+\begin_inset Formula $i$
+\end_inset
+
+ (different from 
+\begin_inset Formula $k$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+One could get also the other messages involving the root but these are not
+ necessary to the algorithm because thy do not appear in the marginals.
+ I write two of them below.
+\end_layout
+
+\begin_layout Enumerate
+For the messages from the root in the reference replica to the interaction
+ 
+\begin_inset Formula $R_{r}$
+\end_inset
+
+ we have 
+\begin_inset Formula 
+\[
+G_{i}(d^{*})\equiv\max_{p_{r}\in\partial r\cup\left\{ r\right\} }\tilde{\psi}_{r\to R_{r}}\left(d_{r}^{*},p_{r}^{*}\right)=\begin{cases}
+0 & \text{if }d_{r}^{*}=0\\
+-\infty & \text{if }d_{r}^{*}\neq0
+\end{cases}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+For the messages from the root in a replica to the interaction 
+\begin_inset Formula $R_{r}$
+\end_inset
+
+ we have 
+\begin_inset Formula 
+\[
+F_{i}(d)\equiv\max_{p_{r}\in\partial r\cup\left\{ r\right\} }\widehat{\psi}_{r\to R_{r}}(d_{r},p_{r})=\begin{cases}
+0 & \text{if }d_{r}=0\\
+-\infty & \text{if }d_{r}\neq0
+\end{cases}.
+\]
+
+\end_inset
+
+
 \end_layout
 
 \end_body
