@@ -70,6 +70,7 @@ function explore(data::Union{MF, String};
                  add_medianS::Bool=false,
                  λsteps::Int=50,
                  #
+                 sched::Symbol=:exp,
                  y::Float64=0.0,
                  yfact::Float64=0.0,
                  γ::Float64=0.0,
@@ -78,6 +79,7 @@ function explore(data::Union{MF, String};
                  kmax::Int=0, # if > 0, perturb the sol with k-th nearest exemplars
                  #
                  verbose::Bool=true,
+                 verbose_algo::Bool=false,
                  outfile::String="",
                  outfile_histo::String="",
                  outfile_pert::String="",
@@ -141,8 +143,8 @@ function explore(data::Union{MF, String};
         for n = 1:nsamples
             seedap = seed + n
             res = FAP.main(S; λ=-λ, seed=seedap, maxiter=maxiter, init=init, α=α, damp=damp,
-                              γ=γ, γfact=γfact, y=y, yfact=yfact,
-                              print=false, print_res=false);
+                              sched=sched, γ=γ, γfact=γfact, y=y, yfact=yfact,
+                              print=verbose_algo, print_res=false);
 
             iter[n] = res.iterations
             pconv[n] = Int(res.converged)

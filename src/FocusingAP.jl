@@ -43,35 +43,11 @@ end
 # const _afp_default_tol = 1.0e-6
 # const _afp_default_display = :none
 #
-# const DisplayLevels = Dict(:none => 0, :final => 1, :iter => 2)
-#
-# display_level(s::Symbol) = get(DisplayLevels, s) do
-#     throw(ArgumentError("Invalid value for the 'display' option: $s."))
-# end
 
-# function affinitypropR(S::DenseMatrix{T};
-#                       maxiter::Integer=_afp_default_maxiter,
-#                       tol::Real=_afp_default_tol,
-#                       damp::Real=_afp_default_damp,
-#                       y::Float64=_afp_default_y,
-#                       γ::Float64=_afp_default_γ,
-#                       γfact::Float64=_afp_default_γfact,
-#                       display::Symbol=_afp_default_display,
-#                       run_vanilla::Bool=false,
-#                       zero_init::Bool=false) where T<:AbstractFloat
-#
-#     n = size(S, 1)
-#     size(S, 2) == n || throw(ArgumentError("S must be a square matrix ($(size(S)) given)."))
-#     n >= 2 || throw(ArgumentError("At least two data points are required ($n given)."))
-#     tol > 0 || throw(ArgumentError("tol must be a positive value ($tol given)."))
-#     0 <= damp < 1 || throw(ArgumentError("damp must be a non-negative real value below 1 ($damp given)."))
-#
-#     _affinityprop(S, round(Int, maxiter), tol, convert(T, damp), display_level(display), y, γ, γfact, run_vanilla, zero_init)
-# end
-
-#function _affinityprop(S::DenseMatrix{T}, o::Dict{Symbol,Any}) where T<:AbstractFloat
 function _affinityprop(S::DenseMatrix{T};
                        maxiter::Int=1000,
+                       miniter::Int=100,
+                       tconv::Int=10,
                        tol::T=1e-6,
                        init::String="unif",
                        α::T=0.1,
@@ -106,6 +82,8 @@ function _affinityprop(S::DenseMatrix{T};
     end
 
     t = 0
+    correct_steps = 0
+    old_numex = 0
     converged = false
     while !converged && t < maxiter
 
@@ -121,11 +99,17 @@ function _affinityprop(S::DenseMatrix{T};
 
         t += 1
 
-        if print
-            # count the number of exemplars
-            ne = _afp_count_exemplars(A, R)
-            @printf("%7d %12.4e | %8d\n", t, ch, ne)
+        # count the number of exemplars
+        ne = _afp_count_exemplars(A, R)
+        if ne == old_numex
+            correct_steps += 1
+        else
+            old_numex = ne
+            correct_steps = 0
         end
+
+        print && @printf("%7d %12.4e | %8d\n", t, ch, ne)
+        (correct_steps >= tconv && t > miniter) && (converged = true)
     end
 
     # extract exemplars and assignments
@@ -145,13 +129,15 @@ function _affinityprop(S::DenseMatrix{T};
     return AffinityPropResult(exemplars, assignments, counts, t, converged, energy)
 end
 
-#function _affinitypropR(S::DenseMatrix{T}, o::Dict{Symbol,Any}) where T<:AbstractFloat
 function _affinitypropR(S::DenseMatrix{T};
                         maxiter::Int=1000,
+                        miniter::Int=10,
+                        tconv::Int=10,
                         tol::T=1e-6,
                         init::String="unif",
                         α::T=0.1,
                         damp::T=0.5,
+                        sched::Symbol=:exp,
                         γ::T=0.1,
                         γfact::T=0.001,
                         y::T=1.0,
@@ -194,6 +180,8 @@ function _affinitypropR(S::DenseMatrix{T};
     end
 
     t = 0
+    correct_steps = 0
+    old_numex = 0
     converged = false
     while !converged && t < maxiter
 
@@ -220,14 +208,26 @@ function _affinitypropR(S::DenseMatrix{T};
         converged = (ch < tol)
 
         t += 1
-        γ *= (1.0 + γfact)
-        y *= (1.0 + yfact)
 
-        if print
-            # count the number of exemplars
-            ne = _afp_count_exemplars(A, R)
-            @printf("%7d %12.4e | %8d\n", t, ch, ne)
+        if sched == :exp
+            γ *= (1.0 + γfact)
+            y *= (1.0 + yfact)
+        elseif sched == :lin
+            γ += γfact
+            y += yfact
         end
+
+        # count the number of exemplars
+        ne = _afp_count_exemplars(A, R)
+        if ne == old_numex
+            correct_steps += 1
+        else
+            old_numex = ne
+            correct_steps = 0
+        end
+
+        print && @printf("%7d %12.4e | %8d\n", t, ch, ne)
+        (correct_steps >= tconv && t > miniter) && (converged = true)
     end
 
     # extract exemplars and assignments
@@ -472,9 +472,12 @@ function main(S::Matrix{Float64};
               α::Float64=0.1,        # mess are init with N(o,α) or U(-α, α)
               dataset::String="",
               maxiter::Int=1000,
+              miniter::Int=100,
+              tconv::Int=10,
               damp::Float64=0.5,
               tol::Float64=1e-9,       # Update converged if max(mess(t) - mess(t-1)) < tol
               λ::Union{Nothing,Float64}=nothing,        # Self affinity parameter
+              sched::Symbol=:exp, # [:exp, :lin]
               y::Float64=0.0,        # number of replicas. fAP is used whenever y > 0 || γ > 0
               yfact::Float64=0.0,    # y(t) = y * (1+yfact)^t
               γ::Float64=0.0,        # elastic interaction. fAP is used whenever y > 0 || γ > 0
@@ -502,12 +505,14 @@ function main(S::Matrix{Float64};
 
     if γ > 0.0 || y > 0.0
         # focusing AP
-        res = _affinitypropR(S; maxiter=maxiter, tol=tol, init=init, α=α, damp=damp,
+        res = _affinitypropR(S; maxiter=maxiter, miniter=miniter, tconv=tconv,
+                                tol=tol, init=init, α=α, damp=damp,
                                 print=print, print_res=print_res,
-                                γ=γ, γfact=γfact, y=y, yfact=yfact)
+                                sched=sched, γ=γ, γfact=γfact, y=y, yfact=yfact)
     else
         # vanilla AP
-        res = _affinityprop(S; maxiter=maxiter, tol=tol, init=init, α=α, damp=damp,
+        res = _affinityprop(S; maxiter=maxiter, miniter=miniter, tconv=tconv,
+                               tol=tol, init=init, α=α, damp=damp,
                                print=print, print_res=print_res)
     end
 
