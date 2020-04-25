@@ -482,6 +482,27 @@ Define
 \end_inset
 
 .
+ Define also 
+\begin_inset Formula $c_{ij}^{*}$
+\end_inset
+
+ as a similarity matrix such that is zero for all 
+\begin_inset Formula $i,j$
+\end_inset
+
+ except for the case of a terminal node 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j=\emptyset$
+\end_inset
+
+ where we have 
+\begin_inset Formula $c_{i\emptyset}^{*}=\infty$
+\end_inset
+
+.
  The max-sum messages (up to a normalization additive constant) are the
  following:
 \end_layout
@@ -508,7 +529,10 @@ Max-Sum messages from/to interaction
 \begin_inset Formula 
 \begin{align*}
 \hat{\psi}_{i\to R_{i}}(x_{i}) & =-c_{ip_{i}}+\sum_{k\in\partial i}\phi_{k\to i}(x_{i})\\
-\hat{\phi}_{R_{i}\to i}(d_{i}) & =\max_{x_{i}^{*}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\tilde{\psi}_{i\to R_{i}}(x_{i}^{*})\right\} 
+\hat{\phi}_{R_{i}\to i}(d_{i}) & =\max_{x_{i}^{*}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\tilde{\psi}_{i\to R_{i}}(x_{i}^{*})\right\} \\
+ & =\max_{d_{i}^{*}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\max_{p_{i}^{*}}\tilde{\psi}_{i\to R_{i}}(d_{i}^{*},p_{i}^{*})\right\} \\
+ & =\max\left\{ \max_{d_{i}^{*}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\tilde{\psi}_{i\to R_{i}}(d_{i}^{*},\emptyset)\right\} ,\max_{d_{i}^{*}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\max_{p_{i}^{*}\backslash\emptyset}\tilde{\psi}_{i\to R_{i}}(d_{i}^{*},p_{i}^{*})\right\} \right\} \\
+ & =\max\left\{ \hat{\phi}_{R_{i}\to i}^{\emptyset}(d_{i}),\hat{\phi}_{R_{i}\to i}^{1}(d_{i})\right\} 
 \end{align*}
 
 \end_inset
@@ -524,8 +548,11 @@ Max-Sum messages from/to interaction
  and the reference graph:
 \begin_inset Formula 
 \begin{align*}
-\tilde{\psi}_{i\to R_{i}}\left(x_{i}^{*}\right) & =\sum_{k\in\partial i}\phi_{k\to i}^{*}\left(x_{i}^{*}\right)+(y-1)\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right)\\
-\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right) & =\max_{x_{i}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\hat{\psi}_{i\to R_{i}}\left(x_{i}\right)\right\} 
+\tilde{\psi}_{i\to R_{i}}\left(x_{i}^{*}\right) & =-c_{ip_{i}}^{*}+\sum_{k\in\partial i}\phi_{k\to i}^{*}\left(x_{i}^{*}\right)+(y-1)\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right)\\
+\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right) & =\max_{x_{i}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\hat{\psi}_{i\to R_{i}}\left(x_{i}\right)\right\} \\
+ & =\max_{d_{i}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\max_{p_{i}}\hat{\psi}_{i\to R_{i}}\left(d_{i},p_{i}\right)\right\} \\
+ & =\max\left\{ \max_{d_{i}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\hat{\psi}_{i\to R_{i}}\left(d_{i},\emptyset\right)\right\} ,\max_{d_{i}}\left\{ -\gamma R_{i}\left(d_{i},d_{i}^{*}\right)+\max_{p_{i}\backslash\emptyset}\hat{\psi}_{i\to R_{i}}\left(d_{i},p_{i}\right)\right\} \right\} \\
+ & =\max\left\{ \tilde{\phi}_{R_{i}\to i}^{\emptyset}\left(d_{i}^{*}\right),\tilde{\phi}_{R_{i}\to i}^{1}\left(d_{i}^{*}\right)\right\} 
 \end{align*}
 
 \end_inset
@@ -537,7 +564,7 @@ Max-Sum messages from/to interaction
 Max-Sum messages inside the reference graph:
 \begin_inset Formula 
 \begin{align*}
-\psi_{i\to j}^{*}\left(x_{i}^{*}\right) & =\sum_{k\in\partial i/j}\phi_{k\to i}^{*}\left(x_{i}^{*}\right)+y\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right)\\
+\psi_{i\to j}^{*}\left(x_{i}^{*}\right) & =-c_{ip_{i}}^{*}+\sum_{k\in\partial i/j}\phi_{k\to i}^{*}\left(x_{i}^{*}\right)+y\tilde{\phi}_{R_{i}\to i}\left(d_{i}^{*}\right)\\
 \phi_{k\to i}^{*}\left(x_{i}^{*}\right) & =\max_{x_{k}^{*}\vert f_{ik}\neq0}\psi_{k\to i}^{*}(x_{k}^{*})
 \end{align*}
 
@@ -547,6 +574,18 @@ Max-Sum messages inside the reference graph:
 \end_layout
 
 \begin_layout Standard
+We have then the following definitions:
+\begin_inset Formula 
+\begin{align*}
+A_{k\to j}(d) & \equiv\max_{p_{k}\neq j,\emptyset}\psi_{k\to j}(d,p_{k})\\
+B_{k\to j} & \equiv\max_{d}\psi_{k\to j}(d,\emptyset)\\
+C_{i\to j}(d) & \equiv\psi_{i\to j}(d,j)\\
+D_{k\to j} & \equiv\phi_{k\to j}(d,\emptyset)\left(\equiv\max\left\{ \max_{d'}A_{k\to j}(d'),B_{k\to j}\right\} \right)\\
+E_{k\to j}(d) & \equiv\phi_{k\to j}(d,i\neq k)\left(\equiv\max\left\{ D_{k\rightarrow j},\,C_{k\to j}(d+1)\right\} \right)
+\end{align*}
+
+\end_inset
+
 Note that this derivation is valid only in the case where the interaction
  between the reference graph and the replica depends only on the depth of
  the site.
@@ -577,8 +616,11 @@ Max-Sum messages from/to interaction
  and a replica:
 \begin_inset Formula 
 \begin{align*}
+F_{i}^{\emptyset}(d) & =-c_{i\emptyset}+\cancel{\sum_{k\in\partial i}D_{k\to i}}\\
 F_{i}(d) & =\max_{k\in\partial i}\left\{ -c_{ik}-E_{k\to i}(d)+A_{k\to i}(d-1)\right\} +\sum_{k\in\partial i}E_{k\to i}(d)\\
-\hat{\phi}_{i}(d) & =\max_{d^{*}}\left\{ -\gamma R_{i}(d,d^{*})+G_{i}(d^{*})\right\} 
+\hat{\phi}_{i}(d) & =\max\left\{ \hat{\phi}_{i}^{\emptyset}(d),\hat{\phi}_{i}^{1}(d)\right\} \\
+\hat{\phi}_{i}^{1}(d_{i}) & =\max_{d^{*}}\left\{ -\gamma R_{i}(d,d^{*})+G_{i}(d^{*})\right\} \\
+\hat{\phi}_{i}^{\emptyset}(d_{i}) & =\max_{d^{*}}\left\{ -\gamma R_{i}(d,d^{*})+G_{i}^{\emptyset}(d^{*})\right\} 
 \end{align*}
 
 \end_inset
@@ -594,8 +636,11 @@ Max-Sum messages from/to interaction
  and the reference graph:
 \begin_inset Formula 
 \begin{align*}
+G_{i}^{\emptyset}(d^{*}) & =-c_{i\emptyset}^{*}+\cancel{\sum_{k\in\partial i}D_{k\to i}^{*}}+(y-1)\tilde{\phi}_{i}\left(d^{*}\right)\\
 G_{i}(d^{*}) & =\max_{k\in\partial i}\left\{ -E_{k\to i}^{*}(d^{*})+A_{k\to i}^{*}(d^{*}-1)\right\} +\sum_{k\in\partial i}E_{k\to i}^{*}(d^{*})+(y-1)\tilde{\phi}_{i}(d^{*})\\
-\tilde{\phi}_{i}(d^{*}) & =\max_{d}\left\{ -\gamma R_{i}(d,d^{*})+F_{i}(d)\right\} 
+\tilde{\phi}_{i}^{\emptyset}(d^{*}) & =\max_{d}\left\{ -\gamma R_{i}(d,d^{*})+F_{i}^{\emptyset}(d)\right\} \\
+\tilde{\phi}_{i}^{1}\left(d^{*}\right) & =\max_{d}\left\{ -\gamma R_{i}(d,d^{*})+F_{i}(d)\right\} \\
+\tilde{\phi}_{i}(d^{*}) & \equiv\max\left\{ \tilde{\phi}_{i}^{\emptyset}\left(d^{*}\right),\tilde{\phi}_{i}^{1}\left(d^{*}\right)\right\} 
 \end{align*}
 
 \end_inset
@@ -608,7 +653,7 @@ Max-Sum messages inside the reference graph:
 \begin_inset Formula 
 \begin{align*}
 A_{i\to j}^{*}(d^{*}) & =\max_{k\in\partial i\backslash j}\left\{ -E_{k\to i}^{*}(d^{*})+A_{k\to i}^{*}(d^{*}-1)\right\} +\sum_{k\in\partial i\backslash j}E_{k\to i}^{*}(d^{*})+y\tilde{\phi}_{i}(d^{*})\\
-B_{i\rightarrow j}^{*} & =\sum_{k\in\partial i\backslash j}D_{k\rightarrow i}^{*}+\max_{d^{*}}\left\{ y\tilde{\phi}_{i}(d^{*})\right\} \\
+B_{i\rightarrow j}^{*} & =-c_{i\emptyset}^{*}+\sum_{k\in\partial i\backslash j}D_{k\rightarrow i}^{*}+\max_{d^{*}}\left\{ y\tilde{\phi}_{i}(d^{*})\right\} \\
 C_{i\to j}^{*}(d^{*}) & =\sum_{k\in\partial i/j}E_{k\to i}^{*}(d^{*})+y\tilde{\phi}_{i}(d^{*})\\
 D_{i\to j}^{*} & =\max\left\{ B_{i\to j}^{*},\,\max_{d'}A_{i\to j}^{*}(d')\right\} \\
 E_{i\to j}^{*}(d^{*}) & =\max\left\{ D_{i\rightarrow j}^{*},\,C_{i\to j}^{*}\left(d^{*}+1\right)\right\} 
@@ -624,7 +669,7 @@ The site marginals are defined in the following way:
 \begin_inset Formula 
 \begin{align*}
 \psi_{i}\left(d_{i},p_{i}\right) & =-c_{ip_{i}}+\sum_{k\in\partial i\backslash p_{i}}E_{k\rightarrow i}^{d}+A_{p_{i}\rightarrow i}^{d-1}+\hat{\phi}_{R_{i}\to i}(d_{i})\\
- & =\sum_{k\in\partial i}E_{k\rightarrow i}^{d}+\left(-c_{ip_{i}}-E_{p_{i}\rightarrow i}^{d}+A_{p_{i}\rightarrow i}^{d-1}\right)+\hat{\phi}_{R_{i}\to i}(d_{i}).
+ & =\sum_{k\in\partial i}E_{k\rightarrow i}^{d}+\left(-c_{ip_{i}}-E_{p_{i}\rightarrow i}^{d}+A_{p_{i}\rightarrow i}^{d-1}\right)+\hat{\phi}_{i}(d_{i}).
 \end{align*}
 
 \end_inset
@@ -632,7 +677,7 @@ The site marginals are defined in the following way:
 
 \begin_inset Formula 
 \begin{align*}
-\psi_{i}\left(d_{i},\emptyset\right) & =-\left(c_{j\emptyset}\equiv0\right)+\sum_{k\in\partial j}D_{k\to j}+\hat{\phi}_{R_{i}\to i}(d_{i}),
+\psi_{i}\left(d_{i},\emptyset\right) & =-c_{i\emptyset}+\sum_{k\in\partial i}D_{k\to i}+\hat{\phi}_{i}(d_{i}),
 \end{align*}
 
 \end_inset
