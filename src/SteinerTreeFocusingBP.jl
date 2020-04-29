@@ -4,7 +4,6 @@ module SteinerTreeFocusingBP
 # *) Choose Root (Is this useful only for PCST?)
 # *) Prize collecting steiner tree
 # *) Read wi0 from file
-# *) Check AP is ok
 # *) Fix various issues: mess convergence, deg 1 nodes
 # *) Implement FBP
 # *) Move plotting functions to another file
@@ -64,16 +63,25 @@ mutable struct FactorGraph
 
     function FactorGraph(N::Int, Δ::Int, α::Float64;
                          graph_seed::Int = 123,
-                         graph_type::Symbol=:fc,
+                         graph_type::Union{Symbol, String}=:fc,
                          c::Int=10, # (average) connectivity
                          root_id::Int = 1,
                          distr::Symbol = :unif,
                          σ::Float64=1.0,
                          init::F=F(0))
 
-        @assert root_id <= N
+        if isa(graph_type, String)
+            input_graph = readdlm(graph_type)
+            numEdges, col = size(input_graph)
+            @assert col == 3 # i j wij  with i < j
+            N = Int(maximum(input_graph[:,1:2]))
 
-        if graph_type == :fc
+            g = Graph()
+            add_vertices!(g, N)
+            for e = 1:numEdges
+                add_edge!(g, input_graph[e,1], input_graph[e,2])
+            end
+        elseif graph_type == :fc
             g = complete_graph(N)
         elseif graph_type == :er
             z = F(c) / F(N-1)
@@ -83,6 +91,7 @@ mutable struct FactorGraph
         else
             error("Wrong graph type. Got $graph_type. Options are [:fc, :er, :rrg]")
         end
+        @assert root_id <= N
 
         vnodes = [VarNode(Δ) for i = 1:N]
 
@@ -129,197 +138,23 @@ mutable struct FactorGraph
                 vnodes[nn].Eout[k] = pointer(v.Ein[j], 1)
             end
         end
-        init_rand_w(vnodes; distr=distr, σ=σ, seed=graph_seed)
 
-        new(g, N, Δ, root_id, vnodes)
-    end
-
-    function FactorGraph(Δ::Int, α::Float64, graph_file::String;
-                         root_id::Int=1,
-                         init::F=F(0))
-
-        input_graph = readdlm(graph_file)
-        numEdges, col = size(input_graph)
-        @assert col == 3 # i j wij  with i < j
-        N = Int(maximum(input_graph[:,1:2]))
-
-        g = Graph()
-        add_vertices!(g, N)
-        for e = 1:numEdges
-            add_edge!(g, input_graph[e,1], input_graph[e,2])
-        end
-
-        vnodes = [VarNode(Δ) for i = 1:N]
-
-        for (i, v) in enumerate(vnodes)
-            for j in neighbors(g, i)
-                push!(v.neighs, j)
-            end
-            numNeighs = deg(v)
-
-            if i == root_id
-                @assert numNeighs > 0
-                v.is_terminal = true # TODO: change this!
-            end
-            rand() < α && (v.is_terminal = true)
-            numNeighs < 1 && (v.is_terminal = false)
-
-            v.w = zeros(F, numNeighs)
-            resize!(v.Ain, numNeighs)
-            resize!(v.Aout, numNeighs)
-            resize!(v.Bin, numNeighs)
-            resize!(v.Bout, numNeighs)
-            resize!(v.Din, numNeighs)
-            resize!(v.Dout, numNeighs)
-            resize!(v.Ein, numNeighs)
-            resize!(v.Eout, numNeighs)
-            #
-            resize!(v.Ψ, numNeighs)
-        end
-
-        for e = 1:numEdges
-            i::Int, nn::Int, r = input_graph[e, :]
-            j = findfirst(isequal(nn), vnodes[i].neighs)
-            vnodes[i].w[j] = r
-            k = findfirst(isequal(i), vnodes[nn].neighs)
-            vnodes[nn].w[k] = r
-        end
-
-        for (i, v) in enumerate(vnodes)
-            for (j, nn) in enumerate(v.neighs)
-                v.Ain[j] = -init .* rand(F, Δ)
-                v.Bin[j] = -init  * rand(F)
-                v.Din[j] = -init  * rand(F)
-                v.Ein[j] = -init .* rand(F, Δ)
-                #
-                v.Ψ[j] = zeros(F, Δ)
-
+        if isa(graph_type, String)
+            for e = 1:numEdges
+                i::Int, nn::Int, r = input_graph[e, :]
+                j = findfirst(isequal(nn), vnodes[i].neighs)
+                vnodes[i].w[j] = r
                 k = findfirst(isequal(i), vnodes[nn].neighs)
-
-                vnodes[nn].Aout[k] = pointer(v.Ain[j], 1)
-                vnodes[nn].Bout[k] = pointer(v.Bin, j)
-                vnodes[nn].Dout[k] = pointer(v.Din, j)
-                vnodes[nn].Eout[k] = pointer(v.Ein[j], 1)
+                vnodes[nn].w[k] = r
             end
+        else
+            init_rand_w(vnodes; distr=distr, σ=σ, seed=graph_seed)
         end
 
         new(g, N, Δ, root_id, vnodes)
     end
-end
 
-function plot_graph(G::FactorGraph, graph_out::String)
-    @extract G N g vnodes root_id
-
-    terminals = [vnodes[i].is_terminal ? 1 : 2 for i = 1:N]
-    nodecolor = [colorant"orange", colorant"lightgrey"]
-    nodefillc = nodecolor[terminals]
-    nodefillc[root_id] = colorant"red"
-
-    draw(PNG(graph_out, 12cm, 12cm),
-         gplot(g, nodelabel=1:N, nodefillc=nodefillc, edgelinewidth=edge_weights(vnodes)))
-
-end
-
-function plot_sol_tree(G::FactorGraph, graph_out::String)
-    @extract G N g vnodes root_id
-
-    terminals = [vnodes[i].is_terminal ? 1 : 2 for i = 1:N]
-    nodecolor = [colorant"orange", colorant"lightgrey"]
-    nodefillc = nodecolor[terminals]
-    nodefillc[root_id] = colorant"red"
-
-    edgecolors = [colorant"transparent" for e in 1:ne(g)]
-
-    for (e, edge) in enumerate(edges(g))
-        i = edge.src
-        nn = edge.dst
-        if vnodes[i].p == nn || vnodes[nn].p == i
-            edgecolors[e] = colorant"green"
-        end
-    end
-
-    draw(PNG(graph_out, 12cm, 12cm),
-         gplot(g, nodelabel=1:N, nodefillc=nodefillc,
-                  layout=circular_layout,
-                  #edgelinewidth=edge_weights(vnodes),
-                  edgestrokec=edgecolors))
-
-end
-
-function plot_sol_tree(G::FactorGraph, graph_out::String, edgelist)
-    @extract G N g vnodes root_id
-
-    terminals = [vnodes[i].is_terminal ? 1 : 2 for i = 1:N]
-    nodecolor = [colorant"orange", colorant"lightgrey"]
-    nodefillc = nodecolor[terminals]
-    nodefillc[root_id] = colorant"red"
-
-    edgecolors = [colorant"transparent" for e in 1:ne(g)]
-
-    for (e, edge) in enumerate(edges(g))
-        for l = 1:length(edgelist)
-            if edgelist[l] == reverse(edge) || edgelist[l] == edge
-                edgecolors[e] = colorant"green"
-            end
-        end
-    end
-
-    draw(PNG(graph_out, 12cm, 12cm),
-         gplot(g, nodelabel=1:N, nodefillc=nodefillc,
-                  layout=circular_layout,
-                  #edgelinewidth=edge_weights(vnodes),
-                  edgestrokec=edgecolors))
-
-end
-
-function edge_weights(vnodes::Vector{VarNode})
-    N = length(vnodes)
-    edgew = []
-    for i = 1:N
-        for j = 1:deg(vnodes[i])
-            if i < vnodes[i].neighs[j]
-                push!(edgew, vnodes[i].w[j])
-            end
-        end
-    end
-    return edgew
-end
-
-function min_span_tree_cost(G::FactorGraph)
-    @extract G g N vnodes root_id
-
-    distmx = ones(N, N)
-    flag = false
-    for (i, v) in enumerate(vnodes)
-        for (j, nn) in enumerate(v.neighs)
-            v.w[j] > 1.0 && (flag = true)
-            distmx[i,nn] = v.w[j]
-        end
-    end
-    flag && @warn "You have weights > 1, mst cost will be wrong"
-
-    # Kruskal MST
-    kruskal_edges = kruskal_mst(g, distmx)
-    kruskal_cost = 0.0
-    for edge in kruskal_edges
-        i, j = edge.dst, edge.src
-        k = findfirst(isequal(j), vnodes[i].neighs)
-        kruskal_cost += vnodes[i].w[k]
-    end
-    @info "Min Spanning Tree (Kruskal) cost = $kruskal_cost"
-
-    # Prim MST
-    prim_edges = prim_mst(g, distmx)
-    prim_cost = 0.0
-    for edge in prim_edges
-        i, j = edge.dst, edge.src
-        k = findfirst(isequal(j), vnodes[i].neighs)
-        prim_cost += vnodes[i].w[k]
-    end
-    @info "Min Spanning Tree (Prim)    cost = $prim_cost"
-
-    return kruskal_edges, prim_edges # needed to plot the sol
-end
+end # struct FactorGraph
 
 function init_rand_w(vnodes::Vector{VarNode}; distr::Symbol=:unif, σ::F=1.0, seed::Int=0)
     seed > 0 && Random.seed!(seed)
@@ -340,6 +175,9 @@ function init_rand_w(vnodes::Vector{VarNode}; distr::Symbol=:unif, σ::F=1.0, se
         end
     end
 end
+
+# TODO: find a better way!
+include("STFBPutils.jl")
 
 function update_root!(v::VarNode)
     @extract v Aout Bout Dout Eout Δ w
@@ -609,13 +447,7 @@ function main(N::Int, Δ::Int, α::Float64;
 
     # Generate the instance (or read it from a file)
     # Use graph_seed to fix the random instance (graph+weights)
-    if isa(graph, Symbol)
-        G = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
-    elseif isa(graph, String)
-        G = FactorGraph(Δ, α, graph; root_id=root_id, init=mess_init)
-        input_graph = readdlm(graph)
-        N = Int(maximum(input_graph[:,1:2]))
-    end
+    G = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
 
     # Plot the instance
     if !isempty(graph_out)
@@ -656,14 +488,13 @@ function main(N::Int, Δ::Int, α::Float64;
         plot_sol_tree(G, sol_out)
     end
 
-    terminal_nodes = [G.vnodes[i].is_terminal for i = 1:N]
-    p = [G.vnodes[i].p for i = 1:N]
-    d = [G.vnodes[i].d for i = 1:N]
+    terminal_nodes = [G.vnodes[i].is_terminal for i = 1:(G.N)]
+    p = [G.vnodes[i].p for i = 1:(G.N)]
+    d = [G.vnodes[i].d for i = 1:(G.N)]
     w = solution_weights(G)
 
-    # TODO: find a smarted way
     num_steiner = 0
-    for i = 1:N
+    for i = 1:(G.N)
         if G.vnodes[i].is_terminal == false && G.vnodes[i].p > 0
             num_steiner += 1
         end
