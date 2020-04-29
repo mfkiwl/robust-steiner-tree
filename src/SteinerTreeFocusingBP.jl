@@ -5,8 +5,7 @@ module SteinerTreeFocusingBP
 # *) Prize collecting steiner tree
 # *) Read wi0 from file
 # *) Fix various issues: mess convergence, deg 1 nodes
-# *) Implement FBP
-# *) Move plotting functions to another file
+# *) Use plotting function as a module (e.g. read from file and plot)
 # *) Can I fix warning from Cairo and Compose?
 
 using Random, Statistics, LinearAlgebra
@@ -32,7 +31,7 @@ mutable struct VarNode
     neighs::Vector{Int}
     w::VF
     is_terminal::Bool
-    #
+    # Messages
     Ain::Vector{VF}
     Aout::Vector{PF}
     Bin::VF
@@ -41,17 +40,19 @@ mutable struct VarNode
     Dout::Vector{PF}
     Ein::Vector{VF}
     Eout::Vector{PF}
-    #
+    # Marginals
     Ψ::Vector{VF}
     Γ::F
+    # Interaction messages
+    ϕ::VF
 end
 VarNode(Δ) = VarNode(Δ, 0, 0, Int[], VF[], false,
                      VVF(), VPF(),      # A
                      VF(), VPF(),       # B
                      VF(), VPF(),       # D
                      VVF(), VPF(),      # E
-                     VVF(), F(0))       # Ψ, Γ
-
+                     VVF(), F(0),       # Ψ, Γ
+                     VF())              # ϕ
 deg(v::VarNode) = length(v.neighs)
 
 mutable struct FactorGraph
@@ -122,6 +123,7 @@ mutable struct FactorGraph
         end
 
         for (i, v) in enumerate(vnodes)
+            v.ϕ = zeros(F, Δ)
             for (j, nn) in enumerate(v.neighs)
                 v.Ain[j] = -init .* rand(F, Δ)
                 v.Bin[j] = -init  * rand(F)
@@ -287,6 +289,196 @@ function update_mess!(v::VarNode; root_id::Int=1, ρ::Float64=0.0)
 
 end
 
+# FBP update
+function update_mess!(v::VarNode, ζ::VF; root_id::Int=1, γ::Float64=0.0)
+    @extract v w Ain Aout Bout Din Dout Ein Eout Ψ Γ ϕ Δ is_terminal
+
+    sumE = zeros(F, Δ)
+    H = zeros(F, Δ)
+    sumD = F(0)
+    maxCav = -Inf .* ones(F, Δ)
+    maxCav2 = -Inf .* ones(F, Δ)
+    maxCavIdx = -1.0 .* ones(F, Δ)
+
+    for j = 1:deg(v)
+        for d = 1:Δ
+            sumE[d] += Ein[j][d]
+            if d == 1
+                M = (v.neighs[j] == root_id) ? (- w[j] - Ein[j][d]) : -myInf
+            else
+                M = - w[j] - Ein[j][d] + Ain[j][d-1]
+            end
+            if maxCav[d] <= M
+                maxCav2[d] = maxCav[d]
+                maxCav[d] = M
+                maxCavIdx[d] = j
+            elseif maxCav2[d] < M
+                maxCav2[d] = M
+            end
+        end
+        sumD += Din[j]
+    end
+
+    maxζ = -myInf
+    for d = 1:Δ
+        maxζ = max(maxζ, ζ[d])
+    end
+
+    for j = 1:deg(v)
+        maxA = -myInf
+        #newB = is_terminal ? -myInf : sumD - Din[j] + ρ * Γ
+        newB = is_terminal ? -myInf : sumD - Din[j] + maxζ
+        unsafe_store!(Bout[j], newB)
+
+        for d = 1:Δ
+            @assert maxCavIdx[d] > 0
+            M = maxCavIdx[d] == j ? maxCav2[d] : maxCav[d]
+            newA = sumE[d] - Ein[j][d] + M + ζ[d]
+            unsafe_store!(Aout[j], newA, d)
+            maxA = max(maxA, newA)
+        end
+        newD = max(maxA, newB)
+        unsafe_store!(Dout[j], newD)
+
+        C = -myInf
+        for d = Δ:-1:1
+            newE = max(C, newD)
+            unsafe_store!(Eout[j], newE, d)
+            C = - w[j] + sumE[d] - Ein[j][d] + ζ[d]
+            Ψ[j][d] = (d == 1) ? (v.neighs[j] == root_id ? C : -myInf) : (C + Ain[j][d-1])
+        end
+
+        normalize_mess!(v, j)
+    end # for j
+
+    maxH = -myInf
+    maxH2 = -myInf
+    maxHidx = -1
+    for d = 1:Δ
+        maxAE = -myInf
+        for j = 1:deg(v)
+            AE = (d == 1) ?
+                 (v.neighs[j] == root_id ? - w[j] - Ein[j][d] : -myInf) :
+                 (- w[j] - Ein[j][d] + Ain[j][d-1])
+            maxAE = max(maxAE, AE)
+        end
+
+        H[d] = maxAE + sumE[d] - γ
+
+        if maxH <= H[d]
+            maxH2 = maxH
+            maxH = H[d]
+            maxHidx = d
+        elseif maxH2 < H[d]
+            maxH2 = H[d]
+        end
+    end
+    for d = 1:Δ
+        if d == maxHidx
+            ϕ[d] = max(H[d] + γ, maxH2)
+        else
+            ϕ[d] = max(H[d] + γ, maxH)
+        end
+    end
+
+    v.Γ = is_terminal ? -myInf : sumD + maxζ
+end
+
+function update_ref_mess!(v::VarNode, ζ::VF; root_id::Int=1, γ::Float64=0.0, y::Float64=0.0)
+    @extract v w Ain Aout Bout Din Dout Ein Eout Ψ Γ ϕ Δ is_terminal
+
+    sumE = zeros(F, Δ)
+    H = zeros(F, Δ)
+    sumD = F(0)
+    maxCav = -Inf .* ones(F, Δ)
+    maxCav2 = -Inf .* ones(F, Δ)
+    maxCavIdx = -1.0 .* ones(F, Δ)
+
+    for j = 1:deg(v)
+        for d = 1:Δ
+            sumE[d] += Ein[j][d]
+            if d == 1
+                M = (v.neighs[j] == root_id) ? (- Ein[j][d]) : -myInf
+            else
+                M = - Ein[j][d] + Ain[j][d-1]
+            end
+            if maxCav[d] <= M
+                maxCav2[d] = maxCav[d]
+                maxCav[d] = M
+                maxCavIdx[d] = j
+            elseif maxCav2[d] < M
+                maxCav2[d] = M
+            end
+        end
+        sumD += Din[j]
+    end
+
+    maxζ = -myInf
+    for d = 1:Δ
+        maxζ = max(maxζ, ζ[d])
+    end
+
+    for j = 1:deg(v)
+        maxA = -myInf
+        #newB = is_terminal ? -myInf : sumD - Din[j] + ρ * Γ
+        newB = is_terminal ? -myInf : sumD - Din[j] + y * maxζ
+        unsafe_store!(Bout[j], newB)
+
+        for d = 1:Δ
+            @assert maxCavIdx[d] > 0
+            M = maxCavIdx[d] == j ? maxCav2[d] : maxCav[d]
+            newA = sumE[d] - Ein[j][d] + M + y * ζ[d]
+            unsafe_store!(Aout[j], newA, d)
+            maxA = max(maxA, newA)
+        end
+        newD = max(maxA, newB)
+        unsafe_store!(Dout[j], newD)
+
+        C = -myInf
+        for d = Δ:-1:1
+            newE = max(C, newD)
+            unsafe_store!(Eout[j], newE, d)
+            C = sumE[d] - Ein[j][d] + y * ζ[d]
+            Ψ[j][d] = (d == 1) ? (v.neighs[j] == root_id ? C : -myInf) : (C + Ain[j][d-1])
+        end
+
+        normalize_mess!(v, j)
+    end # for j
+
+    maxH = -myInf
+    maxH2 = -myInf
+    maxHidx = -1
+    for d = 1:Δ
+        maxAE = -myInf
+        for j = 1:deg(v)
+            AE = (d == 1) ?
+                 (v.neighs[j] == root_id ? - Ein[j][d] : -myInf) :
+                 (- Ein[j][d] + Ain[j][d-1])
+            maxAE = max(maxAE, AE)
+        end
+
+        H[d] = maxAE + sumE[d] + (y-1) * ζ[d] - γ
+
+        if maxH <= H[d]
+            maxH2 = maxH
+            maxH = H[d]
+            maxHidx = d
+        elseif maxH2 < H[d]
+            maxH2 = H[d]
+        end
+    end
+    for d = 1:Δ
+        if d == maxHidx
+            ϕ[d] = max(H[d] + γ, maxH2)
+        else
+            ϕ[d] = max(H[d] + γ, maxH)
+        end
+    end
+
+    v.Γ = is_terminal ? -myInf : sumD + maxζ
+end
+
+
 function normalize_mess!(v::VarNode, j::Int)
     @extract v Aout Bout Dout Eout w Δ
 
@@ -328,6 +520,19 @@ function oneBPstep!(G::FactorGraph; ρ::Float64=0.0)
         deg(vnodes[i]) >  1 && update_mess!(vnodes[i]; root_id=root_id, ρ=ρ)
         #update_mess!(vnodes[i]; root_id=root_id, ρ=ρ)
         # TODO: fix the deg 1 case in update_mess
+    end
+end
+
+function oneFBPstep!(G::FactorGraph, Gref::FactorGraph; γ::Float64=0.0, y::Float64=0.0)
+    @extract G N root_id
+    # TODO: root needs to be updated once
+    update_root!(G.vnodes[root_id])
+    update_root!(Gref.vnodes[root_id])
+    for i in randperm(N)
+        i == root_id && continue
+        deg(G.vnodes[i]) == 0 && continue
+        update_mess!(G.vnodes[i], Gref.vnodes[i].ϕ; root_id=root_id, γ=γ)
+        update_ref_mess!(Gref.vnodes[i], G.vnodes[i].ϕ; root_id=root_id, γ=γ, y=y)
     end
 end
 
@@ -436,6 +641,10 @@ function main(N::Int, Δ::Int, α::Float64;
               tconv::Int = 10,           # stop if valid sol if found tconv consecutive steps
               ρ::Float64 = 0.0,          # reinforcement ρ(t) = ρ + t*ρsteps
               ρstep::Float64 = 0.0,      # reinforcement ρ(t) = ρ + t*ρsteps
+              γ::Float64 = 0.0,
+              γstep::Float64 = 0.0,
+              y::Float64 = 0.0,
+              ystep::Float64 = 0.0,
               compute_mst::Bool = false, # compute min spannig tree
               kmst_out::String = "",     # plot Kruskal min spann tree
               pmst_out::String = "",     # plot Prim min spann tree
@@ -448,6 +657,10 @@ function main(N::Int, Δ::Int, α::Float64;
     # Generate the instance (or read it from a file)
     # Use graph_seed to fix the random instance (graph+weights)
     G = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
+    if γ > 0.0 || y > 0.0
+        @assert y > 1
+        Gref = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
+    end
 
     # Plot the instance
     if !isempty(graph_out)
@@ -464,16 +677,23 @@ function main(N::Int, Δ::Int, α::Float64;
 
     correct_steps = 0
     for t = 1:maxiter
-        oneBPstep!(G; ρ=ρ)
+        if γ > 0.0 || y > 0.0
+            oneFBPstep!(G, Gref; γ=γ, y=y)
+        else
+            oneBPstep!(G; ρ=ρ)
+        end
         assign_variables!(G)
         is_good(G) ? (correct_steps += 1) : (correct_steps = 0)
 
         s = @sprintf("iter=%i, correct_steps=%i", t, correct_steps)
         ρ > 0.0 && (s *= @sprintf(", ρ=%3.3f ", ρ))
+        (γ > 0.0 || y > 0.0) && (s *= @sprintf(", γ=%3.3f, y=%3.3f ", γ, y))
         verbose && print("\r$s")
 
         correct_steps == tconv && break
         ρ += ρstep
+        γ += γstep
+        y += ystep
     end
 
     E = cost(G)
