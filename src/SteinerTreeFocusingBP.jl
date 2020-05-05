@@ -22,7 +22,6 @@ const PF = Ptr{F}
 const VPF = Vector{PF}
 
 const myInf = F(1e10)
-#const myInf = Inf
 
 mutable struct VarNode
     Δ::Int
@@ -53,6 +52,7 @@ VarNode(Δ) = VarNode(Δ, 0, 0, Int[], VF[], false,
                      VVF(), VPF(),      # E
                      VVF(), F(0),       # Ψ, Γ
                      VF())              # ϕ
+
 deg(v::VarNode) = length(v.neighs)
 
 mutable struct FactorGraph
@@ -326,7 +326,6 @@ function update_mess!(v::VarNode, ζ::VF; root_id::Int=1, γ::Float64=0.0)
 
     for j = 1:deg(v)
         maxA = -myInf
-        #newB = is_terminal ? -myInf : sumD - Din[j] + ρ * Γ
         newB = is_terminal ? -myInf : sumD - Din[j] + maxζ
         unsafe_store!(Bout[j], newB)
 
@@ -373,12 +372,14 @@ function update_mess!(v::VarNode, ζ::VF; root_id::Int=1, γ::Float64=0.0)
             maxH2 = H[d]
         end
     end
+    ϕ0 = is_terminal ? -myInf : sumD
     for d = 1:Δ
         if d == maxHidx
             ϕ[d] = max(H[d] + γ, maxH2)
         else
             ϕ[d] = max(H[d] + γ, maxH)
         end
+        ϕ[d] = max(ϕ[d], ϕ0)
     end
 
     v.Γ = is_terminal ? -myInf : sumD + maxζ
@@ -420,7 +421,6 @@ function update_ref_mess!(v::VarNode, ζ::VF; root_id::Int=1, γ::Float64=0.0, y
 
     for j = 1:deg(v)
         maxA = -myInf
-        #newB = is_terminal ? -myInf : sumD - Din[j] + ρ * Γ
         newB = is_terminal ? -myInf : sumD - Din[j] + y * maxζ
         unsafe_store!(Bout[j], newB)
 
@@ -439,7 +439,6 @@ function update_ref_mess!(v::VarNode, ζ::VF; root_id::Int=1, γ::Float64=0.0, y
             newE = max(C, newD)
             unsafe_store!(Eout[j], newE, d)
             C = sumE[d] - Ein[j][d] + y * ζ[d]
-            Ψ[j][d] = (d == 1) ? (v.neighs[j] == root_id ? C : -myInf) : (C + Ain[j][d-1])
         end
 
         normalize_mess!(v, j)
@@ -458,6 +457,9 @@ function update_ref_mess!(v::VarNode, ζ::VF; root_id::Int=1, γ::Float64=0.0, y
         end
 
         H[d] = maxAE + sumE[d] + (y-1) * ζ[d] - γ
+        H0 = is_terminal ? -myInf : (sumD + (y-1) * ζ[d] - γ)
+
+        H[d] = max(H[d], H0)
 
         if maxH <= H[d]
             maxH2 = maxH
@@ -475,7 +477,6 @@ function update_ref_mess!(v::VarNode, ζ::VF; root_id::Int=1, γ::Float64=0.0, y
         end
     end
 
-    v.Γ = is_terminal ? -myInf : sumD + maxζ
 end
 
 
@@ -539,8 +540,8 @@ end
 function assign_variables!(v::VarNode; root_id::Int=1)
     @extract v Γ Ψ Δ
 
-    #M, v.d, v.p = Γ, -1, -1
-    M = -Inf
+    M, v.d, v.p = Γ, -1, -1
+    #M = -Inf
     for d = 1:Δ
         for j = 1:deg(v)
             if Ψ[j][d] >= M
@@ -550,10 +551,9 @@ function assign_variables!(v::VarNode; root_id::Int=1)
             end
         end
     end
-
-    if Γ > M
-        v.p, v.d = -1, -1
-    end
+    # if Γ > M
+    #     v.p, v.d = -1, -1
+    # end
 end
 
 function assign_variables!(G::FactorGraph)
@@ -643,6 +643,7 @@ function main(N::Int, Δ::Int, α::Float64;
               ρstep::Float64 = 0.0,      # reinforcement ρ(t) = ρ + t*ρsteps
               γ::Float64 = 0.0,
               γstep::Float64 = 0.0,
+              γfact::Float64 = 0.0,
               y::Float64 = 0.0,
               ystep::Float64 = 0.0,
               compute_mst::Bool = false, # compute min spannig tree
@@ -657,8 +658,8 @@ function main(N::Int, Δ::Int, α::Float64;
     # Generate the instance (or read it from a file)
     # Use graph_seed to fix the random instance (graph+weights)
     G = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
-    if γ > 0.0 || y > 0.0
-        @assert y > 1
+    if (γ > 0.0 || y > 0.0)
+        #@assert y > 1
         Gref = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
     end
 
@@ -693,6 +694,7 @@ function main(N::Int, Δ::Int, α::Float64;
         correct_steps == tconv && break
         ρ += ρstep
         γ += γstep
+        γ *= (1.0 + γfact)
         y += ystep
     end
 
