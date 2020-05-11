@@ -67,6 +67,7 @@ mutable struct FactorGraph
     function FactorGraph(N::Int, Δ::Int, α::Float64;
                          graph_seed::Int = 123,
                          graph_type::Union{Symbol, String}=:fc,
+                         term_file::String = "",
                          c::Int=10, # (average) connectivity
                          root_id::Int = 1,
                          distr::Symbol = :unif,
@@ -98,6 +99,10 @@ mutable struct FactorGraph
 
         vnodes = [VarNode(Δ) for i = 1:N]
 
+        if !isempty(term_file)
+            terms = readdlm(term_file)
+        end
+
         for (i, v) in enumerate(vnodes)
             for j in neighbors(g, i)
                 push!(v.neighs, j)
@@ -108,8 +113,12 @@ mutable struct FactorGraph
                 @assert numNeighs > 0
                 v.is_terminal = true # TODO: change this!
             end
-            rand() < α && (v.is_terminal = true)
-            numNeighs < 1 && (v.is_terminal = false)
+            if isempty(term_file)
+                rand() < α    && (v.is_terminal = true)
+                numNeighs < 1 && (v.is_terminal = false)
+            else
+                terms[i] != 0 && (v.is_terminal = true)
+            end
 
             v.w = zeros(F, numNeighs)
             resize!(v.Ain, numNeighs)
@@ -837,6 +846,7 @@ function main(N::Int, Δ::Int, α::Float64;
               seed::Int = 0,
               graph_seed::Int = 0,       # fixes random graph and weights generation
               graph::Union{Symbol, String} = :fc, # [:fc, :er, :rrg]
+              term_file::String = "",    # N rows file, if entry != 0 node is terminal
               root_id::Int = 1,          # which site is the root
               c::Int = 3,                # er/rrg average connectivity
               σ::Float64 = 1.0,          # weights init as σ * rand()
@@ -865,10 +875,10 @@ function main(N::Int, Δ::Int, α::Float64;
 
     # Generate the instance (or read it from a file)
     # Use graph_seed to fix the random instance (graph+weights)
-    G = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
+    G = FactorGraph(N, Δ, α; graph_type=graph, term_file=term_file, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
     if (γ > 0.0 || y > 0.0)
         #@assert y > 1
-        Gref = FactorGraph(N, Δ, α; graph_type=graph, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
+        Gref = FactorGraph(N, Δ, α; graph_type=graph, term_file=term_file, graph_seed=graph_seed, c=c, σ=σ, distr=distr, root_id=root_id, init=mess_init)
     end
 
     # Plot the instance
@@ -933,6 +943,7 @@ function main(N::Int, Δ::Int, α::Float64;
             num_steiner += 1
         end
     end
+
     return E, num_steiner, converged, w, terminal_nodes, p, d
 end
 

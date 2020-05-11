@@ -85,6 +85,7 @@ end
 function plot_points(data::MF;
                      m::Union{Nothing, VVF}=nothing,
                      r::Union{Nothing, VI}=nothing,
+                     pointers::Union{Nothing, VI}=nothing, # pointers (assumes Δ=2)
                      outfile::String="")
 
     D, N = size(data)
@@ -97,9 +98,24 @@ function plot_points(data::MF;
         K = maximum(r)
     end
 
+    if !isnothing(pointers)
+        r = copy(pointers)
+        assignments = unique(r)
+        K = length(assignments)
+        for i = 1:K
+            r[r .== assignments[i]] .= i
+        end
+        r = r[2:end] # first is the root
+    end
+
     gr() # plotting backend
 
-    p = scatter(data[1, r.==1], data[2, r.==1], legend=false)
+    if !isnothing(pointers)
+        # nodes that are pointing to the fake root
+        p = scatter(data[1, r.==1], data[2, r.==1], legend=false, marker=(8,:star5, :black))
+    else
+        p = scatter(data[1, r.==1], data[2, r.==1], legend=false)
+    end
     !isnothing(m) && scatter!(m[1][1, :], m[1][2, :], legend=false, marker=(8,:star5, :black))
     for k = 2:K
         scatter!(data[1, r.==k], data[2, r.==k], legend=false)
@@ -179,6 +195,33 @@ function write_graph_file(S::MF, outfile::String; tol::F=0.0)
         end
     end
     writedlm(outfile, rows)
+end
+
+# Takes as input a .stp file from the Dimacs challenge
+# and create another .txt file in the format suitable for SteinerTreeFocusingBP
+# i j w_ij is_terminal with i < j
+function convert_stp(infile::String, outfile::String)
+
+    graph = []
+    terminals_idx = []
+    for line in eachline(infile)
+        if occursin("E ", line)
+            x = split(line)
+            x = Array{Int}([parse(Int, x[i]) for i = 2:4]')
+            push!(graph, x)
+        end
+        if occursin("T ", line)
+            i = split(line)
+            i = parse(Int, i[2])
+            push!(terminals_idx, i)
+        end
+    end
+    graph = vcat(graph...)
+    terminals = zeros(Int, maximum(graph[:,1:2]))
+    terminals[terminals_idx] .= 1
+
+    writedlm(outfile*".txt", graph)
+    writedlm(outfile*"-term.txt", terminals)
 end
 
 
