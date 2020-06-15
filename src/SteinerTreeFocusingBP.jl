@@ -3,7 +3,6 @@ module SteinerTreeFocusingBP
 # TODO:
 # *) Choose Root (Is this useful only for PCST?)
 # *) Prize collecting steiner tree
-# *) Read wi0 from file
 # *) Fix various issues: mess convergence, deg 1 nodes
 # *) Use plotting function as a module (e.g. read from file and plot)
 # *) Can I fix warning from Cairo and Compose?
@@ -894,6 +893,7 @@ function main(N::Int, Δ::Int, α::Float64;
         !isempty(pmst_out) && plot_sol_tree(G, pmst_out, prim_edges)
     end
 
+    iter = 0
     correct_steps = 0
     for t = 1:maxiter
         if γ > 0.0 || y > 0.0
@@ -918,6 +918,7 @@ function main(N::Int, Δ::Int, α::Float64;
         γ += γstep
         γ *= (1.0 + γfact)
         y += ystep
+        iter = t # sad :(
     end
 
     E = cost(G)
@@ -944,7 +945,7 @@ function main(N::Int, Δ::Int, α::Float64;
         end
     end
 
-    return E, num_steiner, converged, w, terminal_nodes, p, d
+    return converged, iter, E, num_steiner, w, terminal_nodes, p, d
 end
 
 end # module

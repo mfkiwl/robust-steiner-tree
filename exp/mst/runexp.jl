@@ -37,9 +37,10 @@ function main(N::Int;
 
     for Δ in Δ_range
         for α in α_range
+            pconv = []
+            iter = []
             ener = []
             stein = []
-            conv = []
             solw = []
             for n = 1:nsamples
                 # TODO: find a better way
@@ -49,32 +50,39 @@ function main(N::Int;
                             graph=graph, distr=distr, c=c, root_id=root_id,
                             maxiter=maxiter, tconv=tconv, ρ=ρ, ρstep=ρstep,
                             verbose=verbose_algo);
-                push!(ener, sol[1])
-                push!(stein, sol[2])
-                push!(conv, sol[3])
-                push!(solw, sol[4]...)
+
+                converged = sol[1]
+                push!(pconv, sol[1])
+                if converged
+                    push!(iter, sol[2])
+                    push!(ener, sol[3])
+                    push!(stein, sol[4])
+                    push!(solw, sol[5]...)
+                end
             end
             if !isempty(outfile_w)
                 writedlm(outfile_w * "_D$Δ" * "_a$α.dat", solw)
             end
 
-            mean_ener = mean(ener)
-            mean_stein = mean(stein)
-            mean_conv = mean(conv)
+            mean_pconv = mean(pconv)
+            mean_ener = mean_pconv > 0.0 ? mean(ener) : 0.0
+            mean_stein = mean_pconv > 0.0 ? mean(stein) : 0.0
+            mean_iter = mean_pconv > 0.0 ? mean(iter) : 0.0
             if nsamples > 1
-                err_ener = std(ener) / sqrt(nsamples-1.0)
-                err_stein = std(stein) / sqrt(nsamples-1.0)
-                err_conv = std(conv) / sqrt(nsamples-1.0)
-                out = @sprintf("Δ=%i, α=%.2f, e=%.4f±%.4f, s=%.4f±%.4f, conv=%.3f±%.3f",
-                                Δ, α, mean_ener, err_ener, mean_stein, err_stein, mean_conv, err_conv)
+                err_pconv = mean_pconv > 0.0 ? (std(pconv) / sqrt(nsamples-1.0)) : 0.0
+                err_ener = mean_pconv > 0.0 ? (std(ener) / sqrt(nsamples-1.0)) : 0.0
+                err_stein = mean_pconv > 0.0 ? (std(stein) / sqrt(nsamples-1.0)) : 0.0
+                err_iter = mean_pconv > 0.0 ? (std(iter) / sqrt(nsamples-1.0)) : 0.0
+                out = @sprintf("Δ=%i, α=%.2f, Pconv=%.2f±%.2f, Tconv=%.1f±%.1f, e=%.3f±%.3f, s=%.3f±%.3f",
+                                Δ, α, mean_pconv, err_pconv, mean_iter, err_iter, mean_ener, err_ener, mean_stein, err_stein)
                 if !isempty(outfile)
-                    println(f, "$Δ $α $mean_ener $err_ener $mean_stein $err_stein $mean_conv $err_conv")
+                    println(f, "$Δ $α $mean_pconv $err_pconv $mean_iter $err_iter $mean_ener $err_ener $mean_stein $err_stein $mean_conv $err_conv")
                 end
             else
-                out = @sprintf("Δ=%i, α=%.2f, e=%.4f, s=%i, conv=%i",
-                                Δ, α, mean_ener, mean_stein, mean_conv)
+                out = @sprintf("Δ=%i, α=%.2f, Pconv=%.2f, Tconv=%.1f, e=%.3f, s=%i",
+                                Δ, α, mean_pconv, mean_iter, mean_ener, mean_stein)
                 if !isempty(outfile)
-                    println(f, "$Δ $α $mean_ener $mean_stein $mean_conv")
+                    println(f, "$Δ $α $mean_ener $mean_pconv $mean_iter $mean_stein $mean_conv")
                 end
             end
             verbose && print("\n$out")
