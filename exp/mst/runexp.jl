@@ -76,13 +76,13 @@ function main(N::Int;
                 out = @sprintf("Δ=%i, α=%.2f, Pconv=%.2f±%.2f, Tconv=%.1f±%.1f, e=%.3f±%.3f, s=%.3f±%.3f",
                                 Δ, α, mean_pconv, err_pconv, mean_iter, err_iter, mean_ener, err_ener, mean_stein, err_stein)
                 if !isempty(outfile)
-                    println(f, "$Δ $α $mean_pconv $err_pconv $mean_iter $err_iter $mean_ener $err_ener $mean_stein $err_stein $mean_conv $err_conv")
+                    println(f, "$Δ $α $mean_pconv $err_pconv $mean_iter $err_iter $mean_ener $err_ener $mean_stein $err_stein")
                 end
             else
                 out = @sprintf("Δ=%i, α=%.2f, Pconv=%.2f, Tconv=%.1f, e=%.3f, s=%i",
                                 Δ, α, mean_pconv, mean_iter, mean_ener, mean_stein)
                 if !isempty(outfile)
-                    println(f, "$Δ $α $mean_ener $mean_pconv $mean_iter $mean_stein $mean_conv")
+                    println(f, "$Δ $α $mean_pconv $mean_iter $mean_ener $mean_stein")
                 end
             end
             verbose && print("\n$out")
