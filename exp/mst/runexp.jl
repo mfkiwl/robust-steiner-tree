@@ -21,6 +21,12 @@ function main(N::Int;
               tconv::Int = 10,
               ρ::Float64 = 0.0,
               ρstep::Float64 = 0.0,
+              γ::Float64 = 0.0,
+              γstep::Float64 = 0.0,
+              γfact::Float64 = 0.0,
+              y::Float64 = 0.0,
+              ystep::Float64 = 0.0,
+              interaction::Symbol = :dist, # [:dist, :pointer]
               verbose::Bool = true,
               verbose_algo::Bool = true,
               outfile::String = "",
@@ -49,6 +55,8 @@ function main(N::Int;
                             seed=seed, graph_seed=graph_seed,
                             graph=graph, distr=distr, c=c, root_id=root_id,
                             maxiter=maxiter, tconv=tconv, ρ=ρ, ρstep=ρstep,
+                            γ=γ, γstep=γstep, γfact=γfact, y=y, ystep=ystep,
+                            interaction=interaction,
                             verbose=verbose_algo);
 
                 converged = sol[1]
