@@ -25,8 +25,8 @@ BP for MST:
 Original papers:
 
 - [[Frey2007](https://pdfs.semanticscholar.org/ea78/2c8b0848987e9575ea648e0419054d3f5bbf.pdf)] *"Clustering by Passing MessagesBetween Data Points"*;
-- [[CommentOn_Frey2007](https://science.sciencemag.org/content/sci/319/5864/726.3.full.pdf)] *"Comment on: Clustering by Passing MessagesBetween Data Points"*;
-- [[ResponseToCommentOn_Frey2007](https://science.sciencemag.org/content/sci/319/5864/726.4.full.pdf)] *"Response to comment on: Clustering by Passing MessagesBetween Data Points"*;
+- [[CommentOn_Frey2007](https://science.sciencemag.org/content/sci/319/5864/726.3.full.pdf)] *"Comment on: Clustering by Passing Messages Between Data Points"*;
+- [[ResponseToCommentOn_Frey2007](https://science.sciencemag.org/content/sci/319/5864/726.4.full.pdf)] *"Response to comment on: Clustering by Passing Messages Between Data Points"*;
 - [[Dueck2009PhD](http://www.cs.columbia.edu/~delbert/docs/DDueck-thesis_small.pdf)] *"Affinity Propagation: Clustering by Passing Messages (PhD Thesis)"*;
 
 BP approach:
@@ -39,6 +39,7 @@ BP approach:
 
 - [**11th Dimacs**](http://dimacs11.zib.de/) implementation challenge on Steiner tree problems;
 - [**Clustering**](https://cs.joensuu.fi/sipu/datasets/) basic benchmarks;
+- [**Real-World MST**](https://homepage.univie.ac.at/ivana.ljubic/research/STP/) real-world telecommunication networks;
 
 ## TODO
 
